@@ -1,0 +1,80 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.venv/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.gradle/
+.idea/
+target/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Docker
+docker-compose.override.yml
+
+# IDE-specific files
+.idea/
+.vscode/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+# Build directories
+dist/
+build/
+out/
+.next/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
