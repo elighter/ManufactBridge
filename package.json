@@ -1,0 +1,56 @@
+{
+  "name": "manufactbridge",
+  "version": "0.1.0",
+  "description": "ManufactBridge - Endüstriyel üretim sistemleri ile ERP sistemleri arasında veri entegrasyonu sağlayan açık kaynak platform",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emrecakmak/ManufactBridge.git"
+  },
+  "keywords": [
+    "manufacturing",
+    "industry4.0",
+    "erp",
+    "iot",
+    "unified-namespace",
+    "data-integration",
+    "mqt",
+    "kafka",
+    "edge-computing"
+  ],
+  "author": "ManufactBridge Contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emrecakmak/ManufactBridge/issues"
+  },
+  "homepage": "https://github.com/emrecakmak/ManufactBridge#readme",
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "async-mqtt": "^2.6.3",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "events": "^3.3.0",
+    "express": "^4.18.2",
+    "js-yaml": "^4.1.0",
+    "kafkajs": "^2.2.4",
+    "modbus-serial": "^8.0.16",
+    "mqtt": "^5.3.0",
+    "node-opcua": "^2.118.0",
+    "node-snap7": "^1.0.7",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

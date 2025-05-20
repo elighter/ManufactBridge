@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqtt-broker
+  namespace: manufactbridge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqtt-broker
+  template:
+    metadata:
+      labels:
+        app: mqtt-broker
+    spec:
+      containers:
+      - name: mqtt-broker
+        image: hivemq/hivemq-ce:latest
+        ports:
+        - containerPort: 1883
+        - containerPort: 8883
+        - containerPort: 8080
+        volumeMounts:
+        - name: mqtt-data
+          mountPath: /opt/hivemq/data
+      volumes:
+      - name: mqtt-data
+        persistentVolumeClaim:
+          claimName: mqtt-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mqtt-broker
+  namespace: manufactbridge
+spec:
+  selector:
+    app: mqtt-broker
+  ports:
+  - name: mqtt
+    port: 1883
+    targetPort: 1883
+  - name: mqtt-secure
+    port: 8883
+    targetPort: 8883
+  - name: mqtt-web
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mqtt-data-pvc
+  namespace: manufactbridge
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

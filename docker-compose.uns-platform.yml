@@ -1,0 +1,181 @@
+version: '3.8'
+
+services:
+  # UnifiedNamespace - MQTT Broker
+  mqtt-broker:
+    image: hivemq/hivemq-ce:latest
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+      - "8080:8080"
+    volumes:
+      - mqtt-data:/opt/hivemq/data
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # UnifiedNamespace - Kafka
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # Zookeeper (Kafka Dependency)
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # Kafka Management UI
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    ports:
+      - "9000:9000"
+    environment:
+      - KAFKA_BROKERCONNECT=kafka:9092
+    depends_on:
+      - kafka
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # Veritabanı - PostgreSQL
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # Zaman Serisi Veritabanı - InfluxDB
+  influxdb:
+    image: influxdb:2.0
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_ADMIN_USER}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # Object Storage - MinIO (S3 Compatible)
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9001:9000"
+      - "9002:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # Görselleştirme - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${POSTGRES_PASSWORD}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # İş Zekası - Apache Superset
+  superset:
+    image: apache/superset:latest
+    ports:
+      - "8088:8088"
+    environment:
+      SUPERSET_SECRET_KEY: ${JWT_SECRET}
+    volumes:
+      - superset-data:/app/superset_home
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # İzleme ve Log - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # İzleme ve Log - ElasticSearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    restart: always
+    networks:
+      - manufactbridge-net
+
+  # İzleme ve Log - Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.14.0
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    restart: always
+    networks:
+      - manufactbridge-net
+
+volumes:
+  mqtt-data:
+  postgres-data:
+  influxdb-data:
+  grafana-data:
+  minio-data:
+  superset-data:
+  prometheus-data:
+  elasticsearch-data:
+
+networks:
+  manufactbridge-net:
+    driver: bridge
