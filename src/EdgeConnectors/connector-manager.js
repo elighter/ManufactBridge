@@ -1,31 +1,56 @@
 /**
- * @fileoverview ManufactBridge - Connector Manager Sınıfı
- * Bu sınıf, farklı protokol adaptörlerini yönetir ve UNS'ye veri aktarımını koordine eder.
+ * ManufactBridge Edge Connector - Connector Manager
+ * 
+ * Bu sınıf, Edge Connector yönetimini sağlar. Yapılandırma dosyalarından 
+ * cihaz konfigürasyonlarını yükler, uygun adaptörleri başlatır ve yönetir.
  */
 
-const EventEmitter = require('events');
-const BaseAdapter = require('./base-adapter');
+const fs = require('fs');
+const path = require('path');
+const yaml = require('js-yaml');
+const EventEmitter = require('eventemitter3');
+const winston = require('winston');
+const config = require('./config');
 
 class ConnectorManager extends EventEmitter {
   /**
-   * Connector Manager constructor'ı
-   * @param {Object} options - Opsiyonel konfigürasyon seçenekleri
+   * Connector Manager sınıfı
+   * @param {Object} options Yönetici seçenekleri
    */
   constructor(options = {}) {
     super();
     
-    this.connectors = new Map();
+    this.options = { ...options };
+    this.adapters = new Map();
+    this.protocolModules = new Map();
+    this.deviceConfigs = new Map();
     this.unsPublisher = options.unsPublisher || null;
-    this.dataCache = new Map();
-    this.status = 'stopped';
-    this.options = {
-      autoReconnect: options.autoReconnect !== undefined ? options.autoReconnect : true,
-      reconnectInterval: options.reconnectInterval || 5000,
-      dataBufferSize: options.dataBufferSize || 1000,
-      ...options
-    };
     
-    this._setupUnsPublisher();
+    // UNS Publisher'ı yapılandır
+    if (this.unsPublisher) {
+      this._setupUnsPublisher();
+    }
+    
+    // Logger yapılandırması
+    this.logger = winston.createLogger({
+      level: config.logging.level || 'info',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+      ),
+      defaultMeta: { service: 'connector-manager' },
+      transports: [
+        new winston.transports.Console(),
+        config.logging.file_enabled ? 
+          new winston.transports.File({ 
+            filename: config.logging.file_path,
+            maxsize: this._parseFileSize(config.logging.max_file_size),
+            maxFiles: config.logging.max_files
+          }) : null
+      ].filter(Boolean)
+    });
+    
+    this.logger.info('Edge Connector Manager oluşturuldu');
   }
   
   /**
@@ -33,13 +58,9 @@ class ConnectorManager extends EventEmitter {
    * @private
    */
   _setupUnsPublisher() {
-    if (!this.unsPublisher) {
-      console.warn('UNS Publisher yapılandırılmadı. Veriler UNS\'ye gönderilemeyecek.');
-      return;
-    }
-    
     // UNS Publisher olaylarını dinleme
     this.unsPublisher.on('error', (err) => {
+      this.logger.error(`UNS Publisher hatası: ${err.message}`, err);
       this.emit('error', {
         source: 'UNS Publisher',
         message: err.message,
@@ -48,284 +69,511 @@ class ConnectorManager extends EventEmitter {
     });
     
     this.unsPublisher.on('published', (data) => {
+      this.logger.debug(`UNS'ye veri gönderildi: ${JSON.stringify(data)}`);
       this.emit('data-published', data);
     });
+    
+    this.logger.info('UNS Publisher yapılandırıldı');
   }
   
   /**
-   * Yeni bir konnektör ekler
-   * @param {string} id - Konnektör ID'si
-   * @param {BaseAdapter} connector - BaseAdapter'dan türeyen konnektör nesnesi
-   * @returns {boolean} Ekleme başarılı ise true döner
+   * Boyut string'ini byte'a çevirir (örn: "10m" -> 10485760)
+   * @param {string} sizeStr Boyut string'i
+   * @returns {number} Byte cinsinden boyut
+   * @private
    */
-  addConnector(id, connector) {
-    if (!connector || !(connector instanceof BaseAdapter)) {
-      throw new Error('Konnektör, BaseAdapter sınıfından türetilmiş olmalıdır');
-    }
+  _parseFileSize(sizeStr) {
+    if (typeof sizeStr !== 'string') return sizeStr;
     
-    if (this.connectors.has(id)) {
-      throw new Error(`${id} ID'si ile bir konnektör zaten mevcut`);
-    }
-    
-    // Konnektör olaylarını dinleme
-    connector.on('data', (data) => this._handleConnectorData(id, data));
-    connector.on('error', (err) => this._handleConnectorError(id, err));
-    connector.on('connect', () => this._handleConnectorConnect(id));
-    connector.on('disconnect', () => this._handleConnectorDisconnect(id));
-    
-    this.connectors.set(id, connector);
-    
-    this.emit('connector-added', {
-      id,
-      connector: connector.getStatus()
-    });
-    
-    return true;
-  }
-  
-  /**
-   * Konnektör nesnesini kaldırır
-   * @param {string} id - Kaldırılacak konnektör ID'si
-   * @returns {boolean} Silme işlemi başarılı ise true döner
-   */
-  removeConnector(id) {
-    if (!this.connectors.has(id)) {
-      throw new Error(`${id} ID'si ile bir konnektör bulunamadı`);
-    }
-    
-    const connector = this.connectors.get(id);
-    
-    // Önce bağlantıyı kapat
-    if (connector.connected) {
-      try {
-        connector.disconnect();
-      } catch (err) {
-        console.error(`Konnektör bağlantısı kapatılırken hata: ${err.message}`);
-      }
-    }
-    
-    this.connectors.delete(id);
-    
-    this.emit('connector-removed', { id });
-    
-    return true;
-  }
-  
-  /**
-   * Tüm konnektörleri başlatır
-   * @returns {Promise<Object>} Başlatma sonuçlarını içeren nesne
-   */
-  async start() {
-    if (this.status === 'running') {
-      return { success: true, message: 'Connector Manager zaten çalışıyor' };
-    }
-    
-    this.status = 'starting';
-    this.emit('starting');
-    
-    const results = {
-      success: true,
-      connectors: {}
+    const units = {
+      'k': 1024,
+      'm': 1024 * 1024,
+      'g': 1024 * 1024 * 1024
     };
     
-    // Tüm konnektörleri başlatma
-    for (const [id, connector] of this.connectors.entries()) {
-      try {
-        await connector.connect();
-        results.connectors[id] = { success: true };
-      } catch (err) {
-        results.success = false;
-        results.connectors[id] = { 
-          success: false, 
-          error: err.message 
-        };
+    const match = sizeStr.match(/^(\d+)([kmg])$/i);
+    if (match) {
+      const size = parseInt(match[1], 10);
+      const unit = match[2].toLowerCase();
+      return size * units[unit];
+    }
+    
+    return parseInt(sizeStr, 10);
+  }
+  
+  /**
+   * Protokol adaptörlerini yükler
+   * @returns {Promise<boolean>} Yükleme başarılı olursa true
+   */
+  async loadProtocolAdapters() {
+    try {
+      this.logger.info('Protokol adaptörleri yükleniyor...');
+      
+      // Hazır protokolleri yükle
+      const protocols = config.protocols;
+      
+      for (const [protocolName, protocolConfig] of Object.entries(protocols)) {
+        if (!protocolConfig.enabled) {
+          this.logger.info(`Protokol devre dışı: ${protocolName}`);
+          continue;
+        }
         
-        this.emit('error', {
-          source: id,
-          message: `Konnektör başlatma hatası: ${err.message}`,
-          details: err
-        });
-        
-        // Otomatik yeniden bağlanma etkinse, zamanlayıcı kur
-        if (this.options.autoReconnect) {
-          this._setupReconnectTimer(id);
+        try {
+          const modulePath = protocolConfig.module_path;
+          
+          // Modülü yükle
+          const AdapterClass = require(modulePath);
+          this.protocolModules.set(protocolName, AdapterClass);
+          
+          this.logger.info(`Protokol adaptörü yüklendi: ${protocolName} (${modulePath})`);
+        } catch (error) {
+          this.logger.error(`Protokol adaptörü yükleme hatası (${protocolName}): ${error.message}`);
         }
       }
+      
+      this.logger.info(`Toplam ${this.protocolModules.size} protokol adaptörü yüklendi`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Protokol adaptörleri yüklenirken hata: ${error.message}`);
+      return false;
     }
-    
-    this.status = results.success ? 'running' : 'partial';
-    this.emit('started', results);
-    
-    return results;
   }
   
   /**
-   * Tüm konnektörleri durdurur
-   * @returns {Promise<Object>} Durdurma sonuçlarını içeren nesne
+   * Cihaz yapılandırmalarını yükler
+   * @returns {Promise<boolean>} Yükleme başarılı olursa true
    */
-  async stop() {
-    if (this.status === 'stopped') {
-      return { success: true, message: 'Connector Manager zaten durdurulmuş' };
-    }
-    
-    this.status = 'stopping';
-    this.emit('stopping');
-    
-    const results = {
-      success: true,
-      connectors: {}
-    };
-    
-    // Tüm konnektörleri durdurma
-    for (const [id, connector] of this.connectors.entries()) {
-      try {
-        await connector.disconnect();
-        results.connectors[id] = { success: true };
-      } catch (err) {
-        results.success = false;
-        results.connectors[id] = { 
-          success: false, 
-          error: err.message 
-        };
-        
-        this.emit('error', {
-          source: id,
-          message: `Konnektör durdurma hatası: ${err.message}`,
-          details: err
-        });
+  async loadDeviceConfigs() {
+    try {
+      const deviceConfigsPath = config.device_configs_path;
+      this.logger.info(`Cihaz yapılandırmaları yükleniyor: ${deviceConfigsPath}`);
+      
+      // Dizin mevcut değilse oluştur
+      if (!fs.existsSync(deviceConfigsPath)) {
+        fs.mkdirSync(deviceConfigsPath, { recursive: true });
+        this.logger.info(`Cihaz yapılandırma dizini oluşturuldu: ${deviceConfigsPath}`);
+        return true;
       }
+      
+      // Tüm yapılandırma dosyalarını yükle
+      const files = fs.readdirSync(deviceConfigsPath);
+      
+      const configFiles = files.filter(file => 
+        file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json')
+      );
+      
+      this.logger.info(`${configFiles.length} cihaz yapılandırma dosyası bulundu`);
+      
+      for (const file of configFiles) {
+        try {
+          const filePath = path.join(deviceConfigsPath, file);
+          const content = fs.readFileSync(filePath, 'utf8');
+          
+          let deviceConfig;
+          if (file.endsWith('.json')) {
+            deviceConfig = JSON.parse(content);
+          } else {
+            deviceConfig = yaml.load(content);
+          }
+          
+          // Temel doğrulamaları yap
+          if (!deviceConfig.connector || !deviceConfig.connector.id) {
+            this.logger.warn(`Geçersiz cihaz yapılandırması (connector.id gerekli): ${file}`);
+            continue;
+          }
+          
+          if (!deviceConfig.connector.protocol) {
+            this.logger.warn(`Geçersiz cihaz yapılandırması (connector.protocol gerekli): ${file}`);
+            continue;
+          }
+          
+          // Yapılandırmayı kaydet
+          this.deviceConfigs.set(deviceConfig.connector.id, {
+            config: deviceConfig,
+            filePath
+          });
+          
+          this.logger.info(`Cihaz yapılandırması yüklendi: ${deviceConfig.connector.id} (${deviceConfig.connector.protocol})`);
+        } catch (error) {
+          this.logger.error(`Cihaz yapılandırması yükleme hatası (${file}): ${error.message}`);
+        }
+      }
+      
+      this.logger.info(`Toplam ${this.deviceConfigs.size} cihaz yapılandırması yüklendi`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Cihaz yapılandırmaları yüklenirken hata: ${error.message}`);
+      return false;
     }
-    
-    this.status = 'stopped';
-    this.emit('stopped', results);
-    
-    return results;
   }
   
   /**
-   * Konnektörden gelen veriyi işler
-   * @param {string} id - Konnektör ID'si
-   * @param {Object} data - Konnektörden gelen veri
+   * Adaptörleri başlatır
+   * @returns {Promise<boolean>} Başlatma başarılı olursa true
+   */
+  async startAdapters() {
+    try {
+      this.logger.info('Adaptörler başlatılıyor...');
+      
+      // Protokoller yüklü değilse yükle
+      if (this.protocolModules.size === 0) {
+        await this.loadProtocolAdapters();
+      }
+      
+      // Yapılandırmalar yüklü değilse yükle
+      if (this.deviceConfigs.size === 0) {
+        await this.loadDeviceConfigs();
+      }
+      
+      // Her yapılandırma için adaptör oluştur ve başlat
+      for (const [deviceId, { config }] of this.deviceConfigs.entries()) {
+        try {
+          const protocol = config.connector.protocol;
+          
+          // Protokol modülü mevcut mu?
+          if (!this.protocolModules.has(protocol)) {
+            this.logger.error(`${deviceId} için protokol adaptörü bulunamadı: ${protocol}`);
+            continue;
+          }
+          
+          // Adaptör zaten çalışıyor mu?
+          if (this.adapters.has(deviceId)) {
+            this.logger.info(`${deviceId} adaptörü zaten çalışıyor`);
+            continue;
+          }
+          
+          // Adaptör oluştur
+          const AdapterClass = this.protocolModules.get(protocol);
+          const adapter = new AdapterClass(config.connector);
+          
+          // Adaptör olaylarını dinle
+          this._setupAdapterEvents(adapter);
+          
+          // Adaptörü başlat
+          await adapter.connect();
+          
+          // Adaptörü kaydet
+          this.adapters.set(deviceId, adapter);
+          
+          this.logger.info(`${deviceId} (${protocol}) adaptörü başlatıldı`);
+        } catch (error) {
+          this.logger.error(`${deviceId} adaptörü başlatılırken hata: ${error.message}`);
+        }
+      }
+      
+      this.logger.info(`Toplam ${this.adapters.size} adaptör başlatıldı`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Adaptörler başlatılırken hata: ${error.message}`);
+      return false;
+    }
+  }
+  
+  /**
+   * Adaptör olaylarını dinler
+   * @param {BaseAdapter} adapter Adaptör
    * @private
    */
-  _handleConnectorData(id, data) {
-    this.emit('data-received', {
-      source: id,
-      data
+  _setupAdapterEvents(adapter) {
+    adapter.on('data', (data) => {
+      this.logger.debug(`Veri alındı: ${data.name} = ${data.value}`);
+      
+      // UNS Publisher varsa, veriyi UNS'ye gönder
+      if (this.unsPublisher) {
+        try {
+          // Veriyi UNS formatına dönüştür
+          const unsData = {
+            topic: this._generateTopicForTag(adapter, data.name),
+            payload: {
+              timestamp: data.timestamp.toISOString(),
+              value: data.value,
+              quality: data.quality,
+              metadata: {
+                adapterId: adapter.id,
+                adapterName: adapter.name,
+                adapterType: adapter.type,
+                ...data.tag
+              }
+            }
+          };
+          
+          // UNS'ye gönder
+          this.unsPublisher.publish(unsData.topic, unsData.payload);
+        } catch (error) {
+          this.logger.error(`UNS'ye veri gönderilirken hata: ${error.message}`);
+        }
+      }
+      
+      // 'data' olayını dışarıya ilet
+      this.emit('data', {
+        adapterId: adapter.id,
+        adapterName: adapter.name,
+        ...data
+      });
     });
     
-    // Veriyi önbelleğe al
-    this.dataCache.set(`${id}:${data.topic || 'default'}`, {
-      timestamp: new Date(),
-      data
-    });
-    
-    // Veri önbelleği boyutunu kontrol et
-    if (this.dataCache.size > this.options.dataBufferSize) {
-      // En eski veriyi çıkar (basitleştirilmiş yaklaşım)
-      const oldestKey = [...this.dataCache.keys()][0];
-      this.dataCache.delete(oldestKey);
-    }
-    
-    // UNS'ye veriyi gönder
-    if (this.unsPublisher) {
-      try {
-        this.unsPublisher.publish(data.topic, data.payload);
-      } catch (err) {
-        this.emit('error', {
-          source: 'UNS Publisher',
-          message: `Veri yayınlama hatası: ${err.message}`,
-          details: err
-        });
-      }
-    }
-  }
-  
-  /**
-   * Konnektör hatasını işler
-   * @param {string} id - Konnektör ID'si
-   * @param {Error} err - Hata nesnesi
-   * @private
-   */
-  _handleConnectorError(id, err) {
-    this.emit('connector-error', {
-      source: id,
-      message: err.message,
-      details: err
+    adapter.on('error', (error) => {
+      this.logger.error(`Adaptör hatası (${adapter.id}): ${error.message}`);
+      this.emit('adapter-error', {
+        adapterId: adapter.id,
+        adapterName: adapter.name,
+        ...error
+      });
     });
   }
   
   /**
-   * Konnektör bağlantı olayını işler
-   * @param {string} id - Konnektör ID'si
+   * Tag için UNS konu yolunu oluşturur
+   * @param {BaseAdapter} adapter Adaptör
+   * @param {string} tagName Tag ismi
+   * @returns {string} UNS konu yolu
    * @private
    */
-  _handleConnectorConnect(id) {
-    this.emit('connector-connected', { id });
+  _generateTopicForTag(adapter, tagName) {
+    // Varsayılan konu formatı
+    const baseTopic = 'manufactbridge';
+    
+    // Adaptör yapılandırmasından konu bilgilerini al
+    const mapping = adapter.options.mapping || {};
+    const enterprise = mapping.enterprise || 'default';
+    const site = mapping.site || 'default';
+    const area = mapping.area || 'default';
+    const line = mapping.line || 'default';
+    const device = mapping.device || adapter.name;
+    
+    // ISA-95 temelli konu yolu oluştur
+    return `${baseTopic}/${enterprise}/${site}/${area}/${line}/${device}/data/${tagName}`;
   }
   
   /**
-   * Konnektör bağlantı kesme olayını işler
-   * @param {string} id - Konnektör ID'si
-   * @private
+   * Adaptörleri durdurur
+   * @returns {Promise<boolean>} İşlem başarılıysa true
    */
-  _handleConnectorDisconnect(id) {
-    this.emit('connector-disconnected', { id });
-    
-    // Otomatik yeniden bağlanma etkinse, zamanlayıcı kur
-    if (this.options.autoReconnect) {
-      this._setupReconnectTimer(id);
-    }
-  }
-  
-  /**
-   * Konnektör için yeniden bağlanma zamanlayıcısı kurar
-   * @param {string} id - Konnektör ID'si
-   * @private
-   */
-  _setupReconnectTimer(id) {
-    const connector = this.connectors.get(id);
-    if (!connector) return;
-    
-    // Eski zamanlayıcıyı temizle
-    if (connector._reconnectTimer) {
-      clearTimeout(connector._reconnectTimer);
-    }
-    
-    // Yeni zamanlayıcı kur
-    connector._reconnectTimer = setTimeout(async () => {
-      try {
-        this.emit('connector-reconnecting', { id });
-        await connector.connect();
-      } catch (err) {
-        this.emit('error', {
-          source: id,
-          message: `Yeniden bağlantı hatası: ${err.message}`,
-          details: err
-        });
-        // Yeniden deneme zamanlayıcısını tekrar kur
-        this._setupReconnectTimer(id);
+  async stopAdapters() {
+    try {
+      this.logger.info('Adaptörler durduruluyor...');
+      
+      const promises = [];
+      
+      for (const [deviceId, adapter] of this.adapters.entries()) {
+        promises.push(
+          adapter.disconnect()
+            .then(() => {
+              this.logger.info(`${deviceId} adaptörü durduruldu`);
+              return true;
+            })
+            .catch(error => {
+              this.logger.error(`${deviceId} adaptörü durdurulurken hata: ${error.message}`);
+              return false;
+            })
+        );
       }
-    }, this.options.reconnectInterval);
+      
+      const results = await Promise.all(promises);
+      const success = results.every(result => result === true);
+      
+      if (success) {
+        this.adapters.clear();
+        this.logger.info('Tüm adaptörler durduruldu');
+      } else {
+        this.logger.warn('Bazı adaptörler durdurulamadı');
+      }
+      
+      return success;
+    } catch (error) {
+      this.logger.error(`Adaptörler durdurulurken hata: ${error.message}`);
+      return false;
+    }
   }
   
   /**
-   * Tüm konnektörlerin durumunu döndürür
-   * @returns {Object} Konnektör durumlarını içeren nesne
+   * Tek bir adaptörü başlatır
+   * @param {string} adapterId Adaptör ID'si
+   * @returns {Promise<boolean>} İşlem başarılıysa true
    */
-  getStatus() {
-    const connectorStatus = {};
+  async startAdapter(adapterId) {
+    try {
+      // Adaptör yapılandırması mevcut mu?
+      if (!this.deviceConfigs.has(adapterId)) {
+        this.logger.error(`${adapterId} için yapılandırma bulunamadı`);
+        return false;
+      }
+      
+      // Adaptör zaten çalışıyor mu?
+      if (this.adapters.has(adapterId)) {
+        this.logger.info(`${adapterId} adaptörü zaten çalışıyor`);
+        return true;
+      }
+      
+      const { config } = this.deviceConfigs.get(adapterId);
+      const protocol = config.connector.protocol;
+      
+      // Protokol modülü mevcut mu?
+      if (!this.protocolModules.has(protocol)) {
+        this.logger.error(`${adapterId} için protokol adaptörü bulunamadı: ${protocol}`);
+        return false;
+      }
+      
+      // Adaptör oluştur
+      const AdapterClass = this.protocolModules.get(protocol);
+      const adapter = new AdapterClass(config.connector);
+      
+      // Adaptör olaylarını dinle
+      this._setupAdapterEvents(adapter);
+      
+      // Adaptörü başlat
+      await adapter.connect();
+      
+      // Adaptörü kaydet
+      this.adapters.set(adapterId, adapter);
+      
+      this.logger.info(`${adapterId} (${protocol}) adaptörü başlatıldı`);
+      return true;
+    } catch (error) {
+      this.logger.error(`${adapterId} adaptörü başlatılırken hata: ${error.message}`);
+      return false;
+    }
+  }
+  
+  /**
+   * Tek bir adaptörü durdurur
+   * @param {string} adapterId Adaptör ID'si
+   * @returns {Promise<boolean>} İşlem başarılıysa true
+   */
+  async stopAdapter(adapterId) {
+    try {
+      // Adaptör çalışıyor mu?
+      if (!this.adapters.has(adapterId)) {
+        this.logger.warn(`${adapterId} adaptörü zaten çalışmıyor`);
+        return true;
+      }
+      
+      const adapter = this.adapters.get(adapterId);
+      
+      // Adaptörü durdur
+      await adapter.disconnect();
+      
+      // Adaptörü kaldır
+      this.adapters.delete(adapterId);
+      
+      this.logger.info(`${adapterId} adaptörü durduruldu`);
+      return true;
+    } catch (error) {
+      this.logger.error(`${adapterId} adaptörü durdurulurken hata: ${error.message}`);
+      return false;
+    }
+  }
+  
+  /**
+   * Tüm adaptörlerin durumunu döndürür
+   * @returns {Array} Adaptör durumları
+   */
+  getAdapters() {
+    const adapters = [];
     
-    for (const [id, connector] of this.connectors.entries()) {
-      connectorStatus[id] = connector.getStatus();
+    // Yapılandırılmış tüm adaptörleri gez
+    for (const [deviceId, { config }] of this.deviceConfigs.entries()) {
+      const isRunning = this.adapters.has(deviceId);
+      
+      adapters.push({
+        id: deviceId,
+        protocol: config.connector.protocol,
+        running: isRunning,
+        status: isRunning ? this.adapters.get(deviceId).getStatus() : null,
+        config: config
+      });
     }
     
-    return {
-      status: this.status,
-      connectorCount: this.connectors.size,
-      cacheSize: this.dataCache.size,
-      connectors: connectorStatus
-    };
+    return adapters;
+  }
+  
+  /**
+   * Cihaz yapılandırmasını günceller veya ekler
+   * @param {Object} deviceConfig Cihaz yapılandırması
+   * @param {boolean} restart Yapılandırmadan sonra adaptörü yeniden başlat
+   * @returns {Promise<boolean>} İşlem başarılıysa true
+   */
+  async setDeviceConfig(deviceConfig, restart = true) {
+    try {
+      // Temel doğrulamaları yap
+      if (!deviceConfig.connector || !deviceConfig.connector.id) {
+        throw new Error('Geçersiz cihaz yapılandırması (connector.id gerekli)');
+      }
+      
+      if (!deviceConfig.connector.protocol) {
+        throw new Error('Geçersiz cihaz yapılandırması (connector.protocol gerekli)');
+      }
+      
+      const deviceId = deviceConfig.connector.id;
+      const deviceConfigsPath = config.device_configs_path;
+      
+      // Dizin mevcut değilse oluştur
+      if (!fs.existsSync(deviceConfigsPath)) {
+        fs.mkdirSync(deviceConfigsPath, { recursive: true });
+      }
+      
+      // Yapılandırma dosyasını oluştur/güncelle
+      const filePath = path.join(deviceConfigsPath, `${deviceId}.yaml`);
+      const yamlContent = yaml.dump(deviceConfig);
+      
+      fs.writeFileSync(filePath, yamlContent, 'utf8');
+      
+      // Yapılandırmayı kaydet
+      this.deviceConfigs.set(deviceId, {
+        config: deviceConfig,
+        filePath
+      });
+      
+      this.logger.info(`Cihaz yapılandırması kaydedildi: ${deviceId}`);
+      
+      // Adaptör zaten çalışıyorsa, yeniden başlat
+      if (restart && this.adapters.has(deviceId)) {
+        await this.stopAdapter(deviceId);
+        await this.startAdapter(deviceId);
+      }
+      
+      return true;
+    } catch (error) {
+      this.logger.error(`Cihaz yapılandırması güncellenirken hata: ${error.message}`);
+      return false;
+    }
+  }
+  
+  /**
+   * Cihaz yapılandırmasını siler
+   * @param {string} adapterId Adaptör ID'si
+   * @param {boolean} stopRunning Çalışıyorsa adaptörü durdur
+   * @returns {Promise<boolean>} İşlem başarılıysa true
+   */
+  async deleteDeviceConfig(adapterId, stopRunning = true) {
+    try {
+      // Yapılandırma mevcut mu?
+      if (!this.deviceConfigs.has(adapterId)) {
+        this.logger.warn(`${adapterId} için yapılandırma bulunamadı`);
+        return false;
+      }
+      
+      // Adaptör çalışıyorsa durdur
+      if (stopRunning && this.adapters.has(adapterId)) {
+        await this.stopAdapter(adapterId);
+      }
+      
+      // Yapılandırma dosyasını sil
+      const { filePath } = this.deviceConfigs.get(adapterId);
+      
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      
+      // Yapılandırmayı kaldır
+      this.deviceConfigs.delete(adapterId);
+      
+      this.logger.info(`Cihaz yapılandırması silindi: ${adapterId}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Cihaz yapılandırması silinirken hata: ${error.message}`);
+      return false;
+    }
   }
 }
 

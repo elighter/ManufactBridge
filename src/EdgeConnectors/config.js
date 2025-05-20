@@ -160,4 +160,4 @@ const mergedConfig = fileConfig ? { ...defaultConfig, ...fileConfig } : defaultC
 // Çevre değişkenlerini çöz
 const config = resolveEnvVars(mergedConfig);
 
-module.exports = config;
+module.exports = config; 

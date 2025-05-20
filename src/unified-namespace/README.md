@@ -1,125 +1,83 @@
-# Unified Namespace (UNS) Modülü
+# ManufactBridge Unified Namespace (UNS)
 
-Bu modül, ManufactBridge platformunun temel bileşeni olan Unified Namespace (UNS) yapısını oluşturur. UNS, farklı sistemlerden gelen verilerin paylaşıldığı merkezi bir veri alanı sağlar ve pub/sub mesajlaşma modeli üzerine kurulmuştur.
+Bu dizin, ManufactBridge platformunun Unified Namespace (UNS) bileşenini içerir. UNS, farklı sistemler ve katmanlar arasında standartlaştırılmış bir veri paylaşım mekanizması sunar.
 
-## Özet
+## UNS Nedir?
 
-UNS modülü, endüstriyel üretim sistemlerinden ve ERP sistemlerinden gelen verilerin merkezi bir veri alanında bütünleştirilmesini sağlar. Verilere standart bir şema ve topic hiyerarşisi yapısı uygulayarak veri paylaşımı, entegrasyon ve analiz süreçlerini basitleştirir.
+Unified Namespace, endüstriyel veriler için tek bir referans noktası oluşturmak amacıyla tasarlanmış bir veri entegrasyon mimarisidir. Bu mimari, çeşitli sistemler ve protokoller arasında veri akışını standartlaştırır ve kolaylaştırır.
 
-## Temel Bileşenler
+## Temel Özellikler
 
-- **Mesaj Aracısı (Message Broker)**: MQTT ve/veya Kafka tabanlı yüksek performanslı mesajlaşma sistemi
-- **Topic Yönetimi**: ISA-95 standardına dayalı hiyerarşik topic yapısı yönetimi 
-- **Şema Doğrulama**: Sparkplug B ile uyumlu veri şemaları ve doğrulama 
-- **Mesaj Yönlendirme**: Kural tabanlı veri yönlendirme ve filtreleme servisleri
+- **Broker Tabanlı Mimari**: MQTT veya Kafka gibi mesaj broker'ları üzerinde çalışır
+- **Konuya Dayalı Veri Modeli**: ISA-95 hiyerarşisi veya Sparkplug B gibi standartlarla veri yolları tanımlanır
+- **Şema Doğrulama**: Paylaşılan verilerin tutarlılığını sağlar
+- **Protokol Bağımsızlığı**: Farklı protokolleri destekler
+- **Güvenlik Katmanı**: Kimlik doğrulama ve yetkilendirme desteği sağlar
 
-## Topic Hiyerarşisi
+## Mimari Bileşenler
 
-UNS içerisinde kullanılan ISA-95 standardına dayalı hiyerarşik topic yapısı:
+UNS aşağıdaki temel bileşenlerden oluşur:
+
+- **Broker**: Veri değişimi için mesaj aracısı (MQTT/Kafka)
+- **Schema**: Veri yapısı tanımları ve doğrulama mekanizmaları
+- **ISA95**: Endüstriyel veri hiyerarşisi tanımları
+- **Sparkplug**: Endüstriyel IoT protokolü entegrasyonu
+- **Security**: Güvenlik ve erişim yönetimi
+
+## Konu Yapısı
+
+ManufactBridge UNS, aşağıdaki konu yapısını kullanır:
 
 ```
-{namespace}/{enterprise}/{site}/{area}/{line}/{workcell}/{equipment}/{messageType}
+manufactbridge/enterprise/site/area/line/device/datatype/tag
 ```
 
-Örnek:
+Örneğin:
 ```
-manufactbridge/acme/istanbul/packaging/line1/filler/plc1/data
-```
-
-## Veri Formatı
-
-UNS veri mesajları JSON formatında olup şu yapıyı izler:
-
-```json
-{
-  "timestamp": "2023-04-10T14:30:00.000Z",
-  "source": "plc1",
-  "metrics": {
-    "temperature": 56.7,
-    "pressure": 102.3,
-    "state": "running"
-  },
-  "metadata": {
-    "dataQuality": "good",
-    "samplingRate": "1s"
-  }
-}
+manufactbridge/acme/istanbul/machine-shop/line1/cnc5/data/temperature
 ```
 
 ## Kullanım
 
-UNS modülüne veri yayınlamak (publish) ve UNS'den veri almak (subscribe) için örnek kod:
+UNS'yi kullanmak için:
 
 ```javascript
-// Veri yayınlama örneği (publish)
-const topic = 'manufactbridge/acme/istanbul/packaging/line1/filler/plc1/data';
-const message = {
-  timestamp: new Date().toISOString(),
-  source: 'plc1',
-  metrics: {
-    temperature: 56.7,
-    pressure: 102.3,
-    state: 'running'
-  },
-  metadata: {
-    dataQuality: 'good',
-    samplingRate: '1s'
-  }
-};
+const { createUNS } = require('./unified-namespace');
 
-// Veri alma örneği (subscribe)
-unsClient.subscribe('manufactbridge/acme/istanbul/packaging/+/+/+/data', (message, topic) => {
-  console.log(`Alınan mesaj: ${topic}`);
-  console.log(message);
+// UNS örneğini oluştur
+const uns = createUNS({
+  broker: {
+    type: 'mqtt',
+    mqtt: {
+      url: 'mqtt://localhost:1883'
+    }
+  }
+});
+
+// Veri yayınla
+uns.publish('manufactbridge/acme/istanbul/assembly/line2/robot1/data/status', {
+  timestamp: new Date().toISOString(),
+  value: 'running',
+  quality: 'GOOD',
+  metadata: {
+    source: 'robot-controller',
+    dataType: 'string'
+  }
+});
+
+// Verilere abone ol
+uns.subscribe('manufactbridge/acme/istanbul/assembly/line2/+/data/#', (topic, message) => {
+  console.log(`${topic}: ${JSON.stringify(message)}`);
 });
 ```
 
-## Güvenlik Özellikleri
+## Kurulum ve Yapılandırma
 
-- Topic tabanlı erişim kontrolü (ACL)
-- TLS/SSL ile uçtan uca şifreleme 
-- OAuth2/OpenID Connect entegrasyonu
+Ayrıntılı kurulum ve yapılandırma için [docker-compose.yml](./docker-compose.yml) ve [server.js](./server.js) dosyalarına bakabilirsiniz.
 
-## Kurulum
+## Alt Bileşenler
 
-UNS modülünün kurulumu için Docker Compose kullanabilirsiniz:
-
-```bash
-docker-compose -f docker-compose.uns.yml up -d
-```
-
-## Konfigürasyon
-
-UNS modülünün konfigürasyonu için `uns-config.yaml` dosyasını düzenleyin:
-
-```yaml
-broker:
-  type: mqtt  # mqtt veya kafka
-  mqtt:
-    host: localhost
-    port: 1883
-    username: ${MQTT_USERNAME}
-    password: ${MQTT_PASSWORD}
-    use_tls: true
-  kafka:
-    bootstrap_servers: ${KAFKA_BOOTSTRAP_SERVERS}
-    
-schema_validation:
-  enabled: true
-  sparkplug_compatible: true
-  custom_schemas_path: ./schemas
-  
-topic_management:
-  root_namespace: manufactbridge
-  enforce_hierarchy: true
-  max_topic_depth: 8
-  
-security:
-  acl_enabled: true
-  acl_config_path: ./acl
-  authentication:
-    type: oauth2  # basic, oauth2, certificate
-    oauth2:
-      issuer_url: ${OAUTH_ISSUER_URL}
-      audience: ${OAUTH_AUDIENCE}
-```
+- [Broker](./broker/README.md): Mesaj broker yönetimi
+- [Schema](./Schema/README.md): Veri şemaları ve doğrulama
+- [ISA95](./ISA95/README.md): ISA-95 standardı entegrasyonu
+- [Sparkplug](./Sparkplug/README.md): Sparkplug B protokolü desteği

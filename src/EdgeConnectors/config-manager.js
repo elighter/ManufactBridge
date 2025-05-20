@@ -44,7 +44,7 @@ class ConfigManager {
         try {
           fs.mkdirSync(dir, { recursive: true });
         } catch (err) {
-          throw new Error(`Konfigürasyon dizini oluşturulamadı: ${dir} - ${err.message}`);
+          console.error(`Konfigürasyon dizini oluşturulamadı: ${dir} - ${err.message}`);
         }
       }
     }
@@ -62,7 +62,7 @@ class ConfigManager {
         this.schema = JSON.parse(schemaContent);
         this.validator.compile(this.schema);
       } catch (err) {
-        throw new Error(`Şema yüklenemedi: ${err.message}`);
+        console.error(`Şema yüklenemedi: ${err.message}`);
       }
     } else {
       // Şema dosyası yoksa varsayılan şemayı oluştur
@@ -211,7 +211,7 @@ class ConfigManager {
       this.schema = defaultSchema;
       this.validator.compile(defaultSchema);
     } catch (err) {
-      throw new Error(`Varsayılan şema oluşturulamadı: ${err.message}`);
+      console.error(`Varsayılan şema oluşturulamadı: ${err.message}`);
     }
   }
   
@@ -232,7 +232,8 @@ class ConfigManager {
       
       return this.configs;
     } catch (err) {
-      throw new Error(`Konfigürasyonlar yüklenemedi: ${err.message}`);
+      console.error(`Konfigürasyonlar yüklenemedi: ${err.message}`);
+      return new Map();
     }
   }
   
@@ -248,7 +249,8 @@ class ConfigManager {
     );
     
     if (!fs.existsSync(configPath)) {
-      throw new Error(`Konfigürasyon dosyası bulunamadı: ${configPath}`);
+      console.error(`Konfigürasyon dosyası bulunamadı: ${configPath}`);
+      return null;
     }
     
     try {
@@ -261,7 +263,7 @@ class ConfigManager {
         const valid = validate(config);
         
         if (!valid) {
-          throw new Error(
+          console.error(
             `Konfigürasyon şema doğrulaması başarısız: ${JSON.stringify(validate.errors)}`
           );
         }
@@ -270,7 +272,8 @@ class ConfigManager {
       this.configs.set(configId, config);
       return config;
     } catch (err) {
-      throw new Error(`Konfigürasyon yüklenemedi: ${err.message}`);
+      console.error(`Konfigürasyon yüklenemedi: ${err.message}`);
+      return null;
     }
   }
   
@@ -282,7 +285,8 @@ class ConfigManager {
    */
   saveConfig(configId, config) {
     if (!config) {
-      throw new Error('Geçerli bir konfigürasyon nesnesi gereklidir');
+      console.error('Geçerli bir konfigürasyon nesnesi gereklidir');
+      return false;
     }
     
     // Konfigürasyonu doğrula
@@ -291,7 +295,7 @@ class ConfigManager {
       const valid = validate(config);
       
       if (!valid) {
-        throw new Error(
+        console.error(
           `Konfigürasyon şema doğrulaması başarısız: ${JSON.stringify(validate.errors)}`
         );
       }
@@ -316,7 +320,8 @@ class ConfigManager {
       
       return true;
     } catch (err) {
-      throw new Error(`Konfigürasyon kaydedilemedi: ${err.message}`);
+      console.error(`Konfigürasyon kaydedilemedi: ${err.message}`);
+      return false;
     }
   }
   
@@ -332,7 +337,8 @@ class ConfigManager {
     );
     
     if (!fs.existsSync(configPath)) {
-      throw new Error(`Konfigürasyon dosyası bulunamadı: ${configPath}`);
+      console.error(`Konfigürasyon dosyası bulunamadı: ${configPath}`);
+      return false;
     }
     
     try {
@@ -343,7 +349,8 @@ class ConfigManager {
       
       return true;
     } catch (err) {
-      throw new Error(`Konfigürasyon silinemedi: ${err.message}`);
+      console.error(`Konfigürasyon silinemedi: ${err.message}`);
+      return false;
     }
   }
   
@@ -436,7 +443,8 @@ class ConfigManager {
       this.saveConfig(configId, sampleConfig);
       return sampleConfig;
     } catch (err) {
-      throw new Error(`Örnek konfigürasyon oluşturulamadı: ${err.message}`);
+      console.error(`Örnek konfigürasyon oluşturulamadı: ${err.message}`);
+      return null;
     }
   }
   
@@ -467,7 +475,8 @@ class ConfigManager {
         .filter(file => file.endsWith('.yaml') || file.endsWith('.yml'))
         .map(file => path.basename(file, path.extname(file)));
     } catch (err) {
-      throw new Error(`Konfigürasyon listesi alınamadı: ${err.message}`);
+      console.error(`Konfigürasyon listesi alınamadı: ${err.message}`);
+      return [];
     }
   }
 }
