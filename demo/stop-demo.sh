@@ -2,8 +2,8 @@
 
 # ManufactBridge Demo Stop Script
 
-echo "🛑 ManufactBridge Demo Durduruluyor..."
-echo "======================================"
+echo "🛑 Stopping ManufactBridge Demo..."
+echo "================================="
 
 # Renk kodları
 RED='\033[0;31m'

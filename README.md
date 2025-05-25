@@ -1,157 +1,157 @@
-# ManufactBridge: Modern Üretim-ERP Veri Platformu
+# ManufactBridge: Modern Manufacturing-ERP Data Platform
 
-ManufactBridge, endüstriyel üretim sistemlerinden (SCADA, Historian, DCS, analizörler) ve ERP sistemlerinden toplanan verileri **Unified Namespace (UNS)** yaklaşımıyla merkezi bir veri platformunda birleştiren modern bir veri mimarisidir. Geleneksel noktadan noktaya entegrasyonlar yerine, merkezi ve standartlaştırılmış bir veri modeli kullanarak ölçeklenebilir, tutarlı ve analitik odaklı bir yapı sunar.
+ManufactBridge is a modern data architecture that combines data collected from industrial manufacturing systems (SCADA, Historian, DCS, analyzers) and ERP systems in a centralized data platform using the **Unified Namespace (UNS)** approach. Instead of traditional point-to-point integrations, it provides a scalable, consistent, and analytics-focused structure using a centralized and standardized data model.
 
-## İçindekiler
+## Table of Contents
 
-- [Genel Bakış](#genel-bakış)
-- [Neden ManufactBridge](#neden-manufactbridge)
-- [Temel Özellikler](#temel-özellikler)
-- [Mimari](#mimari)
-- [Kurulum](#kurulum)
-- [ERP Entegrasyonu](#erp-entegrasyonu)
-- [Katkı Sağlama](#katkı-sağlama)
-- [Lisans](#lisans)
+- [Overview](#overview)
+- [Why ManufactBridge](#why-manufactbridge)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [ERP Integration](#erp-integration)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Genel Bakış
+## Overview
 
-ManufactBridge, endüstriyel üretim verilerini ERP sistemleriyle entegre eden ve standart bir veri modeliyle birleştiren kapsamlı bir veri platformudur. Üretim sistemlerinden toplanan verileri toplu bir şekilde işleyerek anlamlı içgörülere dönüştürür ve karar verme süreçlerini iyileştirir.
+ManufactBridge is a comprehensive data platform that integrates industrial manufacturing data with ERP systems and combines them with a standard data model. It processes data collected from manufacturing systems in a batch manner, transforming them into meaningful insights and improving decision-making processes.
 
-## Neden ManufactBridge
+## Why ManufactBridge
 
-- **Unified Namespace (UNS):** Bir merkezi veri alanında tüm sistemlerin verilerini paylaştığı pub/sub temelli yaklaşım ile veri siloları ortadan kaldırılır
-- **Tek Gerçek Kaynağı:** Tüm veriler ve bilgiler için tek bir gerçek kaynağı sağlayan mimarisi ile veri tutarlılığı
-- **Kapsamlı Veri Platformu:** Data Lake, Time Series DB ve Stream Processing ile zengin analitik imkanları
-- **İleri Analitik:** Yapay zeka ve veri analizi için hazır altyapı 
-- **Akıllı ERP Entegrasyonu:** Yalnızca anlamlı, işlenmiş verilerin ERP sistemlerine aktarımı
-- **Güvenli Mimari:** Katmanlı güvenlik yaklaşımı ve endüstriyel standartlara uygun veri koruma
+- **Unified Namespace (UNS):** Eliminates data silos with a pub/sub-based approach where all systems share data in a centralized data space
+- **Single Source of Truth:** Data consistency with an architecture that provides a single source of truth for all data and information
+- **Comprehensive Data Platform:** Rich analytics capabilities with Data Lake, Time Series DB, and Stream Processing
+- **Advanced Analytics:** Ready infrastructure for artificial intelligence and data analysis
+- **Smart ERP Integration:** Transfer of only meaningful, processed data to ERP systems
+- **Secure Architecture:** Layered security approach and data protection compliant with industrial standards
 
-## Temel Özellikler
+## Key Features
 
-- **ISA-95 Tabanlı UNS Hiyerarşisi:** ISA-95 seviyeleri kullanarak kurumsal hiyerarşi yapısı
-- **MQTT/Kafka Tabanlı Mesajlaşma:** Ölçeklenebilir, gerçek zamanlı veri aktarımı
-- **Standart Veri Modelleri:** Sparkplug B spesifikasyonu ile zenginleştirilmiş veri modelleme
-- **Data Lake Mimarisi:** Yapılandırılmış ve yapılandırılmamış verilerin merkezi deposu
-- **Zaman Serisi Veritabanı:** Sensör ve makine verilerinin verimli depolanması
-- **Stream Processing:** Gerçek zamanlı veri işleme ve dönüştürme yeteneği
-- **Edge Computing Desteği:** Kaynak noktasında veri ön işleme
-- **Çift Yönlü ERP Entegrasyonu:** ERP verilerinin de UNS'ye dahil edilmesi
+- **ISA-95 Based UNS Hierarchy:** Enterprise hierarchy structure using ISA-95 levels
+- **MQTT/Kafka Based Messaging:** Scalable, real-time data transfer
+- **Standard Data Models:** Enhanced data modeling with Sparkplug B specification
+- **Data Lake Architecture:** Centralized repository for structured and unstructured data
+- **Time Series Database:** Efficient storage of sensor and machine data
+- **Stream Processing:** Real-time data processing and transformation capabilities
+- **Edge Computing Support:** Data preprocessing at the source point
+- **Bidirectional ERP Integration:** Inclusion of ERP data into UNS
 
-## Mimari
+## Architecture
 
-ManufactBridge, katmanlı ve modüler bir mimari yapı kullanarak endüstriyel verilerden değer üretmeyi amaçlar:
+ManufactBridge aims to generate value from industrial data using a layered and modular architecture:
 
 ```
                    +---------------------+
                    |                     |
-                   |  VERİ KAYNAKLARI    |
+                   |   DATA SOURCES      |
                    |                     |
                    +---------+-----------+
                              |
                              v
 +-------------------+      +------------------------+      +-------------------+
 |                   |      |                        |      |                   |
-|  Edge Connectors  |      |  Unified Namespace     |      |  ERP Entegrasyon  |
-|                   |<---->|  (UNS)                 |<---->|  Katmanı          |
+|  Edge Connectors  |      |  Unified Namespace     |      |  ERP Integration  |
+|                   |<---->|  (UNS)                 |<---->|  Layer            |
 |                   |      |                        |      |                   |
 +-------------------+      +------------------------+      +-------------------+
                                       |
                                       v
                              +------------------+
                              |                  |
-                             |  Veri Platformu  |
+                             |  Data Platform   |
                              |                  |
                              +--------+---------+
                                       |
                                       v
                              +------------------+
                              |                  |
-                             |  Analitik        |
-                             |  Katmanı         |
+                             |  Analytics       |
+                             |  Layer           |
                              |                  |
                              +------------------+
 ```
 
-## Kurulum
+## Installation
 
-### Gereksinimler
+### Requirements
 - Node.js 16+ 
 - InfluxDB 2.0+
-- MQTT Broker (Mosquitto önerilir)
-- SAP ERP sistemi (opsiyonel)
+- MQTT Broker (Mosquitto recommended)
+- SAP ERP system (optional)
 
-### Hızlı Başlangıç
+### Quick Start
 
 ```bash
-# Repository'yi klonlayın
+# Clone the repository
 git clone https://github.com/emrecakmak/ManufactBridge.git
 cd ManufactBridge
 
-# Bağımlılıkları yükleyin
+# Install dependencies
 npm install
 
-# Konfigürasyonu düzenleyin
+# Configure the platform
 cp config/default.json config/production.json
-# config/production.json dosyasını ortamınıza göre düzenleyin
+# Edit config/production.json according to your environment
 
-# Platform'u başlatın
+# Start the platform
 npm start
 ```
 
-### Docker ile Kurulum
+### Docker Installation
 
 ```bash
-# Docker Compose ile tüm servisleri başlatın
+# Start all services with Docker Compose
 docker-compose up -d
 
-# Logları takip edin
+# Follow logs
 docker-compose logs -f
 ```
 
-### Manuel Kurulum
+### Manual Installation
 
-1. **InfluxDB Kurulumu**
+1. **InfluxDB Installation**
 ```bash
-# InfluxDB 2.0 kurulumu (Ubuntu/Debian)
+# InfluxDB 2.0 installation (Ubuntu/Debian)
 wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
 echo "deb https://repos.influxdata.com/ubuntu focal stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
 sudo apt update && sudo apt install influxdb2
 sudo systemctl start influxdb
 ```
 
-2. **MQTT Broker Kurulumu**
+2. **MQTT Broker Installation**
 ```bash
-# Mosquitto MQTT broker kurulumu
+# Mosquitto MQTT broker installation
 sudo apt install mosquitto mosquitto-clients
 sudo systemctl start mosquitto
 ```
 
-3. **ManufactBridge Kurulumu**
+3. **ManufactBridge Installation**
 ```bash
 npm install
 npm run build
 npm start
 ```
 
-## ERP Entegrasyonu
+## ERP Integration
 
-ManufactBridge, geleneksel ERP entegrasyonlarının ötesine geçerek, modern bir endüstriyel veri platformu üzerinden akıllı ERP entegrasyonu sağlar:
+ManufactBridge goes beyond traditional ERP integrations by providing smart ERP integration through a modern industrial data platform:
 
-- SAP S/4HANA, Odoo, ERPNext ve diğer popüler ERP sistemleri için hazır konnektörler
-- Veri standardizasyonu ve dönüşümü
-- Akıllı filtreleme ve yalnızca anlamlı verilerin aktarımı
-- Çift yönlü iletişim ve tam entegrasyon
+- Ready-made connectors for SAP S/4HANA, Odoo, ERPNext, and other popular ERP systems
+- Data standardization and transformation
+- Smart filtering and transfer of only meaningful data
+- Bidirectional communication and full integration
 
-## Katkı Sağlama
+## Contributing
 
-Projeye katkıda bulunmak için:
+To contribute to the project:
 
-1. Bu repository'yi fork edin
-2. Yeni bir branch oluşturun
-3. Değişikliklerinizi commit edin
-4. Branch'inizi push edin
-5. Pull Request açın
+1. Fork this repository
+2. Create a new branch
+3. Commit your changes
+4. Push your branch
+5. Open a Pull Request
 
-## Lisans
+## License
 
-Bu proje MIT Lisansı altında lisanslanmıştır - detaylar için [LICENSE](LICENSE) dosyasına bakın.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

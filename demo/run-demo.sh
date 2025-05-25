@@ -3,8 +3,8 @@
 # ManufactBridge Demo Script
 # Bu script, tam demo ortamını başlatır
 
-echo "🎬 ManufactBridge Demo Başlatılıyor..."
-echo "========================================"
+echo "🎬 Starting ManufactBridge Demo..."
+echo "=================================="
 
 # Renk kodları
 RED='\033[0;31m'
@@ -19,11 +19,11 @@ set -e
 # Demo dizinine git
 cd "$(dirname "$0")/.."
 
-echo -e "${BLUE}📋 Demo Adımları:${NC}"
-echo "1. Docker servisleri başlatılacak"
-echo "2. ManufactBridge platform başlatılacak"
-echo "3. Veri simülatörü başlatılacak"
-echo "4. Grafana dashboard'ları açılacak"
+echo -e "${BLUE}📋 Demo Steps:${NC}"
+echo "1. Docker services will be started"
+echo "2. ManufactBridge platform will be started"
+echo "3. Data simulator will be started"
+echo "4. Grafana dashboards will be opened"
 echo ""
 
 # Docker servislerini başlat

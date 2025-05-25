@@ -1,7 +1,7 @@
 {
   "name": "manufactbridge",
   "version": "1.0.0",
-  "description": "Modern Üretim-ERP Veri Platformu",
+  "description": "Modern Manufacturing-ERP Data Platform - Industrial data integration with Unified Namespace (UNS) approach",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

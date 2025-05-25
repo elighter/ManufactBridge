@@ -1,54 +1,54 @@
 # ManufactBridge MVP Demo
 
-Bu demo, ManufactBridge platformunun tam fonksiyonel bir örneğini gösterir. Gerçek bir üretim ortamını simüle ederek platform'un tüm özelliklerini deneyimleyebilirsiniz.
+This demo showcases a fully functional example of the ManufactBridge platform. You can experience all features of the platform by simulating a real production environment.
 
-## 🎯 Demo Özellikleri
+## 🎯 Demo Features
 
-### Simüle Edilen Sistemler
-- **Üretim Hattı**: Sensörler, makineler, kalite kontrol
-- **SCADA Sistemi**: OPC UA protokolü ile veri toplama
-- **ERP Sistemi**: SAP entegrasyonu simülasyonu
-- **MQTT Broker**: Unified Namespace (UNS) mesajlaşma
-- **Time Series Database**: InfluxDB ile veri depolama
-- **Dashboard**: Grafana ile görselleştirme
+### Simulated Systems
+- **Production Line**: Sensors, machines, quality control
+- **SCADA System**: Data collection via OPC UA protocol
+- **ERP System**: SAP integration simulation
+- **MQTT Broker**: Unified Namespace (UNS) messaging
+- **Time Series Database**: Data storage with InfluxDB
+- **Dashboard**: Visualization with Grafana
 
-### Gerçek Zamanlı Veriler
-- **Sensör Verileri**: Sıcaklık, basınç, titreşim, hız
-- **Üretim Verileri**: Parça sayısı, kalite oranı, vardiya bilgisi
-- **Alert'ler**: Threshold aşımları, kalite sorunları
-- **ERP Verileri**: Sipariş durumu, malzeme stoku
+### Real-time Data
+- **Sensor Data**: Temperature, pressure, vibration, speed
+- **Production Data**: Part count, quality ratio, shift information
+- **Alerts**: Threshold violations, quality issues
+- **ERP Data**: Order status, material inventory
 
-## 🚀 Demo Başlatma
+## 🚀 Starting the Demo
 
-### Hızlı Başlatma
+### Quick Start
 ```bash
 npm run demo:start
 ```
 
-### Manuel Başlatma
+### Manual Start
 ```bash
-# 1. Docker servislerini başlat
+# 1. Start Docker services
 docker-compose up -d influxdb mosquitto redis grafana
 
-# 2. Platform'u başlat
+# 2. Start the platform
 npm start
 
-# 3. Veri simülatörünü başlat (yeni terminal)
+# 3. Start data simulator (new terminal)
 npm run demo:simulator
 ```
 
-## 📊 Demo URL'leri
+## 📊 Demo URLs
 
 ### Grafana Dashboard
 - **URL**: http://localhost:3002
-- **Kullanıcı**: admin
-- **Şifre**: manufactbridge123
+- **Username**: admin
+- **Password**: manufactbridge123
 
-**Dashboard'lar**:
-- Manufacturing Overview: Ana üretim göstergeleri
-- Real-time Sensors: Sensör verileri
-- Production Metrics: Üretim metrikleri
-- System Alerts: Alert'ler ve uyarılar
+**Dashboards**:
+- Manufacturing Overview: Main production indicators
+- Real-time Sensors: Sensor data
+- Production Metrics: Production metrics
+- System Alerts: Alerts and warnings
 
 ### InfluxDB UI
 - **URL**: http://localhost:8086
@@ -60,77 +60,77 @@ npm run demo:simulator
 - **Health Check**: http://localhost:3001/health
 - **Metrics**: http://localhost:3001/metrics
 
-## 🎬 Demo Senaryoları
+## 🎬 Demo Scenarios
 
-### Senaryo 1: Normal Üretim
-1. Demo'yu başlatın
-2. Grafana'da "Manufacturing Overview" dashboard'unu açın
-3. Real-time sensör verilerini gözlemleyin
-4. Üretim sayacının artışını izleyin
+### Scenario 1: Normal Production
+1. Start the demo
+2. Open "Manufacturing Overview" dashboard in Grafana
+3. Observe real-time sensor data
+4. Monitor the production counter increase
 
-### Senaryo 2: Alert Yönetimi
-1. Sıcaklık sensörünün 80°C'yi aşmasını bekleyin
-2. "System Alerts" dashboard'unda alert'i görün
-3. Alert'in otomatik olarak temizlenmesini izleyin
+### Scenario 2: Alert Management
+1. Wait for temperature sensor to exceed 80°C
+2. See the alert in "System Alerts" dashboard
+3. Watch the alert automatically clear
 
-### Senaryo 3: ERP Entegrasyonu
-1. "ERP Integration Status" panelini kontrol edin
-2. Sipariş durumu güncellemelerini izleyin
-3. Malzeme stoku değişimlerini gözlemleyin
+### Scenario 3: ERP Integration
+1. Check "ERP Integration Status" panel
+2. Monitor order status updates
+3. Observe material inventory changes
 
-### Senaryo 4: Kalite Kontrolü
-1. Üretim verilerinde kalite sorunlarını izleyin
-2. Kalite alert'lerinin tetiklenmesini bekleyin
-3. Kalite oranı metriklerini analiz edin
+### Scenario 4: Quality Control
+1. Monitor quality issues in production data
+2. Wait for quality alerts to trigger
+3. Analyze quality ratio metrics
 
-## 📈 Demo Verileri
+## 📈 Demo Data
 
-### Sensör Simülasyonu
+### Sensor Simulation
 ```javascript
-// Sıcaklık: 20-80°C arası, ±2°C varyans
-// Basınç: 1.0-5.0 bar arası, ±0.2 bar varyans
-// Titreşim: 0.1-2.0 mm/s arası, ±0.1 mm/s varyans
-// Hız: 1000-2000 rpm arası, ±50 rpm varyans
+// Temperature: 20-80°C range, ±2°C variance
+// Pressure: 1.0-5.0 bar range, ±0.2 bar variance
+// Vibration: 0.1-2.0 mm/s range, ±0.1 mm/s variance
+// Speed: 1000-2000 rpm range, ±50 rpm variance
 ```
 
-### Üretim Simülasyonu
+### Production Simulation
 ```javascript
-// Üretim hızı: 10 parça/dakika
-// Kalite oranı: %95
-// Vardiya: Sabah (06:00-14:00), Öğleden sonra (14:00-22:00), Gece (22:00-06:00)
+// Production rate: 10 parts/minute
+// Quality ratio: 95%
+// Shifts: Morning (06:00-14:00), Afternoon (14:00-22:00), Night (22:00-06:00)
 ```
 
-### Alert Simülasyonu
+### Alert Simulation
 ```javascript
-// Sıcaklık yüksek: %5 olasılık
-// Basınç düşük: %3 olasılık  
-// Titreşim yüksek: %2 olasılık
-// Kalite sorunu: %4 olasılık
+// High temperature: 5% probability
+// Low pressure: 3% probability  
+// High vibration: 2% probability
+// Quality issue: 4% probability
 ```
 
-## 🛑 Demo Durdurma
+## 🛑 Stopping the Demo
 
 ```bash
 npm run demo:stop
 ```
 
-veya
+or
 
 ```bash
 ./demo/stop-demo.sh
 ```
 
-## 📁 Log Dosyaları
+## 📁 Log Files
 
-Demo sırasında oluşturulan log dosyaları:
+Log files generated during the demo:
 
-- `logs/demo-platform.log`: Platform logları
-- `logs/demo-simulator.log`: Simülatör logları
-- `logs/manufactbridge.log`: Ana platform logları
+- `logs/demo-platform.log`: Platform logs
+- `logs/demo-simulator.log`: Simulator logs
+- `logs/manufactbridge.log`: Main platform logs
 
-## 🔧 Konfigürasyon
+## 🔧 Configuration
 
-Demo konfigürasyonu `config/default.json` dosyasında bulunur:
+Demo configuration is located in `config/default.json`:
 
 - **MQTT Broker**: localhost:1883
 - **InfluxDB**: localhost:8086
@@ -138,44 +138,44 @@ Demo konfigürasyonu `config/default.json` dosyasında bulunur:
 - **Platform**: localhost:3000
 - **Monitoring**: localhost:3001
 
-## 🐛 Sorun Giderme
+## 🐛 Troubleshooting
 
-### Docker Servisleri Başlamıyor
+### Docker Services Not Starting
 ```bash
-# Port'ları kontrol edin
+# Check ports
 netstat -tulpn | grep :8086
 netstat -tulpn | grep :1883
 
-# Docker loglarını kontrol edin
+# Check Docker logs
 docker-compose logs influxdb
 docker-compose logs mosquitto
 ```
 
-### Platform Bağlanamıyor
+### Platform Cannot Connect
 ```bash
-# InfluxDB hazır mı?
+# Is InfluxDB ready?
 curl http://localhost:8086/health
 
-# MQTT broker çalışıyor mu?
+# Is MQTT broker running?
 nc -z localhost 1883
 ```
 
-### Veri Gelmiyor
+### No Data Coming
 ```bash
-# Simülatör çalışıyor mu?
+# Is simulator running?
 ps aux | grep data-simulator
 
-# MQTT mesajlarını dinleyin
+# Listen to MQTT messages
 mosquitto_sub -h localhost -t "manufactbridge/+/+/+/+/+/+/+"
 ```
 
-## 📞 Destek
+## 📞 Support
 
-Demo ile ilgili sorularınız için:
+For questions about the demo:
 - GitHub Issues: [ManufactBridge Issues](https://github.com/emrecakmak/ManufactBridge/issues)
 - Email: emre@example.com
 
 ---
 
 **ManufactBridge MVP Demo v1.0**  
-*Modern Üretim-ERP Veri Platformu* 
+*Modern Manufacturing-ERP Data Platform* 
