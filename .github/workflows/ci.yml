@@ -1,6 +1,6 @@
 name: ManufactBridge CI/CD
 
-on:
+on: [workflow_dispatch]
   push:
     branches: [ main, develop ]
   pull_request:
