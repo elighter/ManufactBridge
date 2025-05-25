@@ -74,13 +74,63 @@ ManufactBridge, katmanlı ve modüler bir mimari yapı kullanarak endüstriyel v
 
 ## Kurulum
 
+### Gereksinimler
+- Node.js 16+ 
+- InfluxDB 2.0+
+- MQTT Broker (Mosquitto önerilir)
+- SAP ERP sistemi (opsiyonel)
+
+### Hızlı Başlangıç
+
 ```bash
 # Repository'yi klonlayın
-git clone https://github.com/elighter/ManufactBridge.git
+git clone https://github.com/emrecakmak/ManufactBridge.git
 cd ManufactBridge
 
-# Docker Compose ile kurulum
+# Bağımlılıkları yükleyin
+npm install
+
+# Konfigürasyonu düzenleyin
+cp config/default.json config/production.json
+# config/production.json dosyasını ortamınıza göre düzenleyin
+
+# Platform'u başlatın
+npm start
+```
+
+### Docker ile Kurulum
+
+```bash
+# Docker Compose ile tüm servisleri başlatın
 docker-compose up -d
+
+# Logları takip edin
+docker-compose logs -f
+```
+
+### Manuel Kurulum
+
+1. **InfluxDB Kurulumu**
+```bash
+# InfluxDB 2.0 kurulumu (Ubuntu/Debian)
+wget -qO- https://repos.influxdata.com/influxdb.key | sudo apt-key add -
+echo "deb https://repos.influxdata.com/ubuntu focal stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+sudo apt update && sudo apt install influxdb2
+sudo systemctl start influxdb
+```
+
+2. **MQTT Broker Kurulumu**
+```bash
+# Mosquitto MQTT broker kurulumu
+sudo apt install mosquitto mosquitto-clients
+sudo systemctl start mosquitto
+```
+
+3. **ManufactBridge Kurulumu**
+```bash
+npm install
+npm run build
+npm start
 ```
 
 ## ERP Entegrasyonu

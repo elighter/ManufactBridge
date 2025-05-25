@@ -71,7 +71,7 @@ const defaultConfig = {
   protocols: {
     opcua: {
       enabled: process.env.OPCUA_ENABLED !== 'false',
-      module_path: './protocols/opcua-adapter'
+      module_path: './SCADA/opcua-adapter'
     },
     modbus: {
       enabled: process.env.MODBUS_ENABLED !== 'false',

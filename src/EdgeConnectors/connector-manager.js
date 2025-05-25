@@ -11,6 +11,7 @@ const yaml = require('js-yaml');
 const EventEmitter = require('eventemitter3');
 const winston = require('winston');
 const config = require('./config');
+const ProtocolTransformer = require('./protocol-transformer');
 
 class ConnectorManager extends EventEmitter {
   /**
@@ -25,6 +26,7 @@ class ConnectorManager extends EventEmitter {
     this.protocolModules = new Map();
     this.deviceConfigs = new Map();
     this.unsPublisher = options.unsPublisher || null;
+    this.protocolTransformer = new ProtocolTransformer(options.transformerOptions);
     
     // UNS Publisher'ı yapılandır
     if (this.unsPublisher) {
@@ -281,24 +283,30 @@ class ConnectorManager extends EventEmitter {
       // UNS Publisher varsa, veriyi UNS'ye gönder
       if (this.unsPublisher) {
         try {
-          // Veriyi UNS formatına dönüştür
-          const unsData = {
-            topic: this._generateTopicForTag(adapter, data.name),
-            payload: {
-              timestamp: data.timestamp.toISOString(),
+          // Protokol dönüştürücü ile veriyi UNS formatına dönüştür
+          const transformedData = this.protocolTransformer.transform(
+            {
+              name: data.name,
               value: data.value,
+              timestamp: data.timestamp,
               quality: data.quality,
-              metadata: {
-                adapterId: adapter.id,
-                adapterName: adapter.name,
-                adapterType: adapter.type,
-                ...data.tag
-              }
-            }
-          };
+              address: data.tag?.address,
+              nodeId: data.tag?.nodeId,
+              dataType: data.tag?.dataType
+            },
+            adapter.type,
+            adapter
+          );
           
           // UNS'ye gönder
-          this.unsPublisher.publish(unsData.topic, unsData.payload);
+          this.unsPublisher.publish(
+            transformedData.topic, 
+            transformedData.payload,
+            {
+              qos: transformedData.qos,
+              retain: transformedData.retain
+            }
+          );
         } catch (error) {
           this.logger.error(`UNS'ye veri gönderilirken hata: ${error.message}`);
         }

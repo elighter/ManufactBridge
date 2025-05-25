@@ -30,8 +30,8 @@ Endüstriyel sistemler ve diğer veri kaynaklarından veri toplama bileşenleri:
 
 Veri akışının merkezi mesajlaşma katmanı:
 
-- **Broker**: MQTT/Kafka mesaj aracı yapılandırmaları
-- **Schema**: Veri şema tanımları ve doğrulama bileşenleri
+- **broker**: MQTT/Kafka mesaj aracı yapılandırmaları
+- **schema**: Veri şema tanımları ve doğrulama bileşenleri
 - **Sparkplug**: Sparkplug B protokolü uyarlama bileşenleri
 - **ISA95**: ISA-95 standardında hiyerarşik yapı bileşenleri
 

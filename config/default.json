@@ -1,0 +1,183 @@
+{
+  "security": {
+    "enabled": true,
+    "authentication": {
+      "enabled": true,
+      "type": "basic",
+      "oauth2": {
+        "issuer_url": "https://your-oauth-provider.com",
+        "audience": "manufactbridge",
+        "jwks_uri": "https://your-oauth-provider.com/.well-known/jwks.json"
+      }
+    },
+    "authorization": {
+      "enabled": true,
+      "default_policy": "deny",
+      "admin_users": ["admin"]
+    },
+    "tls": {
+      "enabled": false,
+      "key_file": "certs/server.key",
+      "cert_file": "certs/server.crt",
+      "ca_file": "certs/ca.crt",
+      "require_client_cert": false
+    },
+    "audit_log": true
+  },
+  "uns": {
+    "mqtt": {
+      "broker": {
+        "host": "localhost",
+        "port": 1883,
+        "secure": false,
+        "username": "",
+        "password": ""
+      },
+      "topics": {
+        "root": "manufactbridge",
+        "wildcard": "manufactbridge/+/+/+/+/+/+/+"
+      }
+    },
+    "kafka": {
+      "enabled": false,
+      "brokers": ["localhost:9092"],
+      "clientId": "manufactbridge",
+      "topics": {
+        "manufacturing_data": "manufacturing-data",
+        "alerts": "manufacturing-alerts"
+      }
+    }
+  },
+  "dataPlatform": {
+    "influxdb": {
+      "url": "http://localhost:8086",
+      "token": "your-influxdb-token",
+      "org": "manufactbridge",
+      "bucket": "manufacturing_data",
+      "batchSize": 1000,
+      "flushInterval": 5000,
+      "timeout": 30000
+    },
+    "processing": {
+      "enabled": true,
+      "aggregationInterval": "1m",
+      "alerting": true,
+      "windowSize": 60000,
+      "maxBufferSize": 10000,
+      "alertThresholds": {
+        "manufactbridge/enterprise1/site1/area1/line1/sensor1/data/temperature": {
+          "min": 10,
+          "max": 80,
+          "enabled": true,
+          "severity": "warning"
+        }
+      }
+    },
+    "retention": {
+      "defaultPolicy": "30d",
+      "policies": {
+        "raw_data": "7d",
+        "aggregated_data": "90d",
+        "alerts": "365d"
+      }
+    }
+  },
+  "erp": {
+    "enabled": true,
+    "syncInterval": 300000,
+    "batchSize": 100,
+    "retryAttempts": 3,
+    "retryDelay": 5000,
+    "systems": {
+      "sap_production": {
+        "type": "sap",
+        "host": "sap-server.company.com",
+        "port": 8000,
+        "client": "100",
+        "username": "BRIDGE_USER",
+        "password": "your-sap-password",
+        "language": "EN",
+        "protocol": "https",
+        "apiPath": "/sap/opu/odata/sap",
+        "timeout": 30000
+      }
+    },
+    "dataMapping": {
+      "manufactbridge/enterprise1/site1/area1/line1/machine1/data/production_count": {
+        "sap_production": {
+          "enabled": true,
+          "entity": "ProductionOrders",
+          "operation": "update",
+          "fields": {
+            "ActualQuantity": "value",
+            "LastUpdate": "timestamp",
+            "Plant": "metadata.site",
+            "WorkCenter": "metadata.line"
+          },
+          "transformations": [
+            {
+              "type": "scale",
+              "field": "ActualQuantity",
+              "factor": 1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "adapters": {
+    "opcua_line1": {
+      "type": "opcua",
+      "enabled": true,
+      "connection": {
+        "endpoint": "opc.tcp://plc-line1.company.com:4840",
+        "securityMode": "None",
+        "securityPolicy": "None",
+        "authentication": {
+          "type": "anonymous"
+        }
+      },
+      "subscription": {
+        "publishingInterval": 1000,
+        "maxNotificationsPerPublish": 100,
+        "priority": 10,
+        "keepAliveCount": 10,
+        "lifetimeCount": 1000
+      },
+      "tags": [
+        {
+          "nodeId": "ns=2;s=Line1.Temperature",
+          "topic": "manufactbridge/enterprise1/site1/area1/line1/sensor1/data/temperature",
+          "samplingInterval": 1000,
+          "queueSize": 10
+        },
+        {
+          "nodeId": "ns=2;s=Line1.Pressure",
+          "topic": "manufactbridge/enterprise1/site1/area1/line1/sensor1/data/pressure",
+          "samplingInterval": 1000,
+          "queueSize": 10
+        }
+      ]
+    }
+  },
+  "logging": {
+    "level": "info",
+    "file_enabled": true,
+    "file_path": "logs/manufactbridge.log",
+    "max_file_size": "10m",
+    "max_files": 5,
+    "console_enabled": true
+  },
+  "monitoring": {
+    "enabled": true,
+    "port": 3001,
+    "metrics": {
+      "enabled": true,
+      "endpoint": "/metrics"
+    },
+    "health": {
+      "enabled": true,
+      "endpoint": "/health"
+    }
+  }
+} 

@@ -78,6 +78,20 @@ class BaseAdapter extends EventEmitter {
   }
   
   /**
+   * Konfigürasyon doğrulama metodu
+   * @throws {Error} Konfigürasyon geçerli değilse hata fırlatır
+   */
+  validateConfig() {
+    if (!this.options) {
+      throw new Error('Adaptör konfigürasyonu gereklidir');
+    }
+    
+    if (!this.options.name) {
+      this.logger.warn('Adaptör adı belirtilmemiş, varsayılan ad kullanılıyor');
+    }
+  }
+
+  /**
    * Adaptörü başlatır ve bağlantıyı kurar
    * @returns {Promise} Başarılıysa resolve olan Promise
    */
@@ -93,6 +107,15 @@ class BaseAdapter extends EventEmitter {
   async disconnect() {
     this.logger.info(`${this.name} adaptörü bağlantısı kesiliyor...`);
     throw new Error('disconnect() metodu alt sınıfta uygulanmalıdır');
+  }
+
+  /**
+   * Tag'leri tanımlar (alias for addTags)
+   * @param {Array|Object} tags Eklenecek tag'ler
+   * @returns {Promise<boolean>} İşlemin başarı durumu
+   */
+  async defineTags(tags) {
+    return this.addTags(tags);
   }
   
   /**

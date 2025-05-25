@@ -13,6 +13,7 @@ const config = require('./config');
 
 // SCADA adaptörleri
 const ModbusAdapter = require('./SCADA/modbus-adapter');
+const OPCUAAdapter = require('./SCADA/opcua-adapter');
 
 /**
  * Edge Connector modülü ana fonksiyonu
@@ -40,7 +41,8 @@ function createEdgeConnector(options = {}) {
     configManager,
     BaseAdapter,
     adapters: {
-      ModbusAdapter
+      ModbusAdapter,
+      OPCUAAdapter
       // Diğer adaptörler eklenebilir
     },
     config
@@ -54,5 +56,6 @@ module.exports = {
   ConnectorManager,
   ConfigManager,
   ModbusAdapter,
+  OPCUAAdapter,
   config
 }; 

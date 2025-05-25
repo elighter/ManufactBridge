@@ -1,0 +1,235 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ManufactBridge - Manufacturing Overview",
+    "tags": ["manufacturing", "iot", "production"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Production Line Temperature",
+        "type": "timeseries",
+        "targets": [
+          {
+            "query": "from(bucket: \"manufacturing_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"sensor_data\")\n  |> filter(fn: (r) => r[\"topic\"] =~ /temperature/)\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "barAlignment": 0,
+              "lineWidth": 1,
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "spanNulls": false,
+              "insertNulls": false,
+              "showPoints": "auto",
+              "pointSize": 5,
+              "stacking": {"mode": "none", "group": "A"},
+              "axisPlacement": "auto",
+              "axisLabel": "",
+              "axisColorMode": "text",
+              "scaleDistribution": {"type": "linear"},
+              "axisCenteredZero": false,
+              "hideFrom": {"legend": false, "tooltip": false, "vis": false},
+              "thresholdsStyle": {"mode": "off"}
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            },
+            "unit": "celsius"
+          },
+          "overrides": []
+        },
+        "options": {
+          "tooltip": {"mode": "single", "sort": "none"},
+          "legend": {"displayMode": "visible", "placement": "bottom", "calcs": []},
+          "displayMode": "single"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Production Count",
+        "type": "stat",
+        "targets": [
+          {
+            "query": "from(bucket: \"manufacturing_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"production_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"count\")\n  |> last()",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": []
+        },
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"],
+            "fields": ""
+          },
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto"
+        }
+      },
+      {
+        "id": 3,
+        "title": "System Alerts",
+        "type": "logs",
+        "targets": [
+          {
+            "query": "from(bucket: \"manufacturing_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"alerts\")\n  |> sort(columns: [\"_time\"], desc: true)",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+        "options": {
+          "showTime": true,
+          "showLabels": false,
+          "showCommonLabels": false,
+          "wrapLogMessage": false,
+          "prettifyLogMessage": false,
+          "enableLogDetails": true,
+          "dedupStrategy": "none",
+          "sortOrder": "Descending"
+        }
+      },
+      {
+        "id": 4,
+        "title": "ERP Integration Status",
+        "type": "table",
+        "targets": [
+          {
+            "query": "from(bucket: \"manufacturing_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"erp_status\")\n  |> last()",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto",
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "showHeader": true,
+          "sortBy": []
+        }
+      },
+      {
+        "id": 5,
+        "title": "Data Platform Metrics",
+        "type": "timeseries",
+        "targets": [
+          {
+            "query": "from(bucket: \"manufacturing_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"platform_metrics\")\n  |> filter(fn: (r) => r[\"_field\"] == \"points_per_second\")",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "barAlignment": 0,
+              "lineWidth": 1,
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "spanNulls": false,
+              "insertNulls": false,
+              "showPoints": "never",
+              "pointSize": 5,
+              "stacking": {"mode": "none", "group": "A"},
+              "axisPlacement": "auto",
+              "axisLabel": "",
+              "axisColorMode": "text",
+              "scaleDistribution": {"type": "linear"},
+              "axisCenteredZero": false,
+              "hideFrom": {"legend": false, "tooltip": false, "vis": false},
+              "thresholdsStyle": {"mode": "off"}
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "red", "value": 80}
+              ]
+            },
+            "unit": "reqps"
+          },
+          "overrides": []
+        },
+        "options": {
+          "tooltip": {"mode": "single", "sort": "none"},
+          "legend": {"displayMode": "visible", "placement": "bottom", "calcs": []},
+          "displayMode": "single"
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Annotations & Alerts",
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "refresh": "5s",
+    "schemaVersion": 27,
+    "version": 0,
+    "links": []
+  }
+} 

@@ -42,7 +42,7 @@ manufactbridge/acme/istanbul/machine-shop/line1/cnc5/data/temperature
 UNS'yi kullanmak için:
 
 ```javascript
-const { createUNS } = require('./unified-namespace');
+const { createUNS } = require('./UnifiedNamespace');
 
 // UNS örneğini oluştur
 const uns = createUNS({
@@ -78,6 +78,6 @@ Ayrıntılı kurulum ve yapılandırma için [docker-compose.yml](./docker-compo
 ## Alt Bileşenler
 
 - [Broker](./broker/README.md): Mesaj broker yönetimi
-- [Schema](./Schema/README.md): Veri şemaları ve doğrulama
+- [Schema](./schema/README.md): Veri şemaları ve doğrulama
 - [ISA95](./ISA95/README.md): ISA-95 standardı entegrasyonu
 - [Sparkplug](./Sparkplug/README.md): Sparkplug B protokolü desteği

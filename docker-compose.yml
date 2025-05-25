@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  # InfluxDB Time Series Database
+  influxdb:
+    image: influxdb:2.7
+    container_name: manufactbridge-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=manufactbridge123
+      - DOCKER_INFLUXDB_INIT_ORG=manufactbridge
+      - DOCKER_INFLUXDB_INIT_BUCKET=manufacturing_data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=manufactbridge-super-secret-token
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - influxdb_config:/etc/influxdb2
+    networks:
+      - manufactbridge
+    restart: unless-stopped
+
+  # MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: manufactbridge-mqtt
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+    networks:
+      - manufactbridge
+    restart: unless-stopped
+
+  # Redis (for caching and session management)
+  redis:
+    image: redis:7-alpine
+    container_name: manufactbridge-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - manufactbridge
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # ManufactBridge Application
+  manufactbridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: manufactbridge-app
+    ports:
+      - "3000:3000"
+      - "3001:3001"  # Monitoring port
+    environment:
+      - NODE_ENV=production
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=manufactbridge-super-secret-token
+      - INFLUXDB_ORG=manufactbridge
+      - INFLUXDB_BUCKET=manufacturing_data
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+      - ./certs:/app/certs
+    depends_on:
+      - influxdb
+      - mosquitto
+      - redis
+    networks:
+      - manufactbridge
+    restart: unless-stopped
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: manufactbridge-grafana
+    ports:
+      - "3002:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=manufactbridge123
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - influxdb
+    networks:
+      - manufactbridge
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: manufactbridge-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - manufactbridge
+      - grafana
+    networks:
+      - manufactbridge
+    restart: unless-stopped
+
+volumes:
+  influxdb_data:
+  influxdb_config:
+  mosquitto_data:
+  mosquitto_logs:
+  redis_data:
+  grafana_data:
+
+networks:
+  manufactbridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

@@ -23,7 +23,7 @@ ManufactBridge/
 │   ├── mes-connectors/       # MES bağlantıları (isteğe bağlı)
 │   ├── plc-connectors/       # PLC bağlantıları (isteğe bağlı)
 │   └── iot-connectors/       # IoT sensör bağlantıları (isteğe bağlı)
-├── unified-namespace/        # Merkezi veri alanı (temel modül)
+├── UnifiedNamespace/        # Merkezi veri alanı (temel modül)
 ├── data-platform/            # Veri depolama ve işleme (temel modül)
 │   ├── data-lake/            # Uzun süreli veri depolama (isteğe bağlı)
 │   ├── time-series-db/       # Zaman serisi veritabanı (isteğe bağlı)
