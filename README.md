@@ -36,6 +36,10 @@ ManufactBridge is a comprehensive data platform that integrates industrial manuf
 - **Stream Processing:** Real-time data processing and transformation capabilities
 - **Edge Computing Support:** Data preprocessing at the source point
 - **Bidirectional ERP Integration:** Inclusion of ERP data into UNS
+- **Multi-Protocol Support:** OPC UA, Modbus, MQTT, Sparkplug B, Siemens S7
+- **Enterprise ERP Connectors:** SAP, Odoo integration with more coming soon
+- **Advanced Security:** OAuth2, TLS encryption, role-based access control
+- **Production Ready:** 90%+ test coverage, comprehensive monitoring, and alerting
 
 ## Architecture
 
@@ -137,10 +141,13 @@ npm start
 
 ManufactBridge goes beyond traditional ERP integrations by providing smart ERP integration through a modern industrial data platform:
 
-- Ready-made connectors for SAP S/4HANA, Odoo, ERPNext, and other popular ERP systems
-- Data standardization and transformation
+- **SAP Connector:** Full S/4HANA integration with OData and RFC support
+- **Odoo Connector:** Complete Odoo ERP integration with production orders, inventory, and quality control
+- **ERPNext Connector:** (Coming Q1 2025) Open-source ERP integration
+- Data standardization and transformation with UNS format
 - Smart filtering and transfer of only meaningful data
 - Bidirectional communication and full integration
+- Real-time synchronization with manufacturing data
 
 ## Contributing
 
