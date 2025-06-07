@@ -8,6 +8,7 @@ const { UNSManager } = require('./UNS');
 const { OPCUAAdapter, ProtocolTransformer } = require('./EdgeConnectors');
 const { DataPlatform, InfluxDBClient, StreamProcessor } = require('./DataPlatform');
 const { ERPIntegration, SAPConnector } = require('./ERPIntegration');
+const { LinearService } = require('./IntegrationLayer/LinearIntegration');
 
 /**
  * ManufactBridge Main Class
@@ -22,6 +23,7 @@ class ManufactBridge {
     this.uns = null;
     this.dataPlatform = null;
     this.erpIntegration = null;
+    this.linearService = null;
     this.adapters = new Map();
     
     this.started = false;
@@ -58,6 +60,13 @@ class ManufactBridge {
         console.log('✅ ERP integration started');
       }
       
+      // Start Linear integration
+      if (this.config.linear?.enabled) {
+        this.linearService = new LinearService(this.config.linear);
+        await this.linearService.initialize();
+        console.log('✅ Linear integration started');
+      }
+      
       // Start edge adapters
       await this._startAdapters();
       
@@ -83,6 +92,11 @@ class ManufactBridge {
       // Stop adapters
       for (const [id, adapter] of this.adapters) {
         await adapter.stop();
+      }
+      
+      // Stop Linear integration
+      if (this.linearService) {
+        await this.linearService.shutdown();
       }
       
       // Stop ERP integration
@@ -123,6 +137,7 @@ class ManufactBridge {
       uns: this.uns?.getStatus() || null,
       dataPlatform: this.dataPlatform?.getStatus() || null,
       erpIntegration: this.erpIntegration?.getStatus() || null,
+      linearService: this.linearService?.getStatus() || null,
       adapters: Array.from(this.adapters.entries()).map(([id, adapter]) => ({
         id,
         status: adapter.getStatus()
@@ -177,6 +192,11 @@ class ManufactBridge {
           if (this.erpIntegration) {
             await this.erpIntegration.sendToERP(data);
           }
+          
+          // Linear'a manufacturing event olarak gönder
+          if (this.linearService && this._isManufacturingData(data)) {
+            this.linearService.emit('manufacturing:event', this._convertToManufacturingEvent(data));
+          }
         } catch (error) {
           console.error('UNS data processing error:', error.message);
         }
@@ -201,10 +221,102 @@ class ManufactBridge {
     if (this.dataPlatform) {
       this.dataPlatform.on('streamAlert', (alert) => {
         console.warn('🚨 Stream Alert:', alert);
+        
+        // Linear'a alert gönder
+        if (this.linearService) {
+          this.linearService.emit('manufacturing:alert', {
+            type: alert.type || 'stream_alert',
+            severity: alert.severity || 'medium',
+            machineId: alert.machineId || 'data_platform',
+            message: alert.message,
+            timestamp: alert.timestamp || new Date().toISOString(),
+            additionalData: alert
+          });
+        }
       });
     }
-  }
-}
+    
+    // Linear service event'leri
+    if (this.linearService) {
+      this.linearService.on('linear:issue:updated', (data) => {
+        console.log('📋 Linear issue updated:', data.issueId);
+      });
+      
+      this.linearService.on('manufacturing:issue:created', (data) => {
+        console.log('🏭 Manufacturing issue created in Linear:', data.issueId);
+             });
+     }
+   }
+   
+   /**
+    * Verinin manufacturing ile ilgili olup olmadığını kontrol et
+    */
+   _isManufacturingData(data) {
+     if (!data || !data.topic) return false;
+     
+     const manufacturingTopics = [
+       'machine',
+       'production',
+       'quality',
+       'maintenance',
+       'sensor',
+       'alarm',
+       'alert'
+     ];
+     
+     return manufacturingTopics.some(topic => 
+       data.topic.toLowerCase().includes(topic)
+     );
+   }
+   
+   /**
+    * UNS verisini manufacturing event'ine çevir
+    */
+   _convertToManufacturingEvent(data) {
+     const payload = data.payload || {};
+     
+     // Severity belirleme
+     let severity = 'medium';
+     if (payload.alarm || payload.alert) {
+       severity = payload.severity || 'high';
+     } else if (payload.error) {
+       severity = 'critical';
+     } else if (payload.warning) {
+       severity = 'medium';
+     }
+     
+     // Event type belirleme
+     let eventType = 'data_update';
+     if (data.topic.includes('alarm') || data.topic.includes('alert')) {
+       eventType = 'machine_error';
+     } else if (data.topic.includes('quality')) {
+       eventType = 'quality_issue';
+     } else if (data.topic.includes('maintenance')) {
+       eventType = 'maintenance_required';
+     } else if (data.topic.includes('production')) {
+       eventType = 'production_delay';
+     }
+     
+     // Machine ID çıkarma
+     const machineId = payload.machineId || 
+                      payload.deviceId || 
+                      data.topic.split('/')[1] || 
+                      'unknown';
+     
+     return {
+       eventType,
+       severity,
+       machineId,
+       description: payload.message || `${eventType} detected on ${machineId}`,
+       timestamp: payload.timestamp || new Date().toISOString(),
+       additionalData: {
+         topic: data.topic,
+         payload: payload,
+         source: 'uns'
+       }
+     };
+   }
+ }
 
 // Export'lar
 module.exports = {
@@ -217,7 +329,8 @@ module.exports = {
   InfluxDBClient,
   StreamProcessor,
   ERPIntegration,
-  SAPConnector
+  SAPConnector,
+  LinearService
 };
 
 // If this file is run directly

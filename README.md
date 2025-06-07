@@ -10,6 +10,7 @@ ManufactBridge is a modern data architecture that combines data collected from i
 - [Architecture](#architecture)
 - [Installation](#installation)
 - [ERP Integration](#erp-integration)
+- [Linear Integration](#linear-integration)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -38,6 +39,7 @@ ManufactBridge is a comprehensive data platform that integrates industrial manuf
 - **Bidirectional ERP Integration:** Inclusion of ERP data into UNS
 - **Multi-Protocol Support:** OPC UA, Modbus, MQTT, Sparkplug B, Siemens S7
 - **Enterprise ERP Connectors:** SAP, Odoo integration with more coming soon
+- **Linear Integration:** Automatic issue creation and project management integration
 - **Advanced Security:** OAuth2, TLS encryption, role-based access control
 - **Production Ready:** 90%+ test coverage, comprehensive monitoring, and alerting
 
@@ -148,6 +150,46 @@ ManufactBridge goes beyond traditional ERP integrations by providing smart ERP i
 - Smart filtering and transfer of only meaningful data
 - Bidirectional communication and full integration
 - Real-time synchronization with manufacturing data
+
+## Linear Integration
+
+ManufactBridge includes comprehensive Linear integration for modern project management and issue tracking:
+
+### Features
+- **Automatic Issue Creation:** Manufacturing events automatically converted to Linear issues
+- **Smart Prioritization:** Event severity mapped to Linear priority levels
+- **Webhook Integration:** Bidirectional communication with Linear workspace
+- **Manufacturing Dashboard:** Real-time statistics and issue tracking
+- **Team Collaboration:** Automatic assignment and notification system
+
+### Quick Setup
+
+```bash
+# Install Linear SDK
+npm install @linear/sdk
+
+# Configure environment variables
+export LINEAR_API_KEY="your_linear_api_key"
+export LINEAR_TEAM_ID="your_team_id"
+export LINEAR_AUTO_CREATE_ISSUES="true"
+
+# Enable in configuration
+{
+  "linear": {
+    "enabled": true,
+    "autoCreateIssues": true
+  }
+}
+```
+
+### Event Types
+- **Machine Errors:** Critical priority issues for equipment failures
+- **Quality Issues:** High priority issues for quality control problems
+- **Maintenance Required:** Normal priority issues for scheduled maintenance
+- **Production Delays:** High priority issues for production bottlenecks
+- **Sensor Failures:** Critical priority issues for sensor malfunctions
+
+For detailed Linear integration documentation, see [docs/LINEAR_INTEGRATION.md](docs/LINEAR_INTEGRATION.md).
 
 ## Contributing
 

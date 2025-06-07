@@ -1,0 +1,56 @@
+{
+  "enabled": true,
+  "teamId": "your-linear-team-id",
+  "projectId": "your-linear-project-id",
+  "autoCreateIssues": true,
+  "logLevel": "info",
+  "retryAttempts": 3,
+  "retryDelay": 1000,
+  "issueLabels": {
+    "manufacturing": "manufacturing",
+    "critical": "critical",
+    "maintenance": "maintenance",
+    "quality": "quality",
+    "production": "production",
+    "sensor": "sensor"
+  },
+  "eventMapping": {
+    "machine_error": {
+      "priority": 1,
+      "labels": ["manufacturing", "critical"]
+    },
+    "quality_issue": {
+      "priority": 2,
+      "labels": ["manufacturing", "quality"]
+    },
+    "maintenance_required": {
+      "priority": 3,
+      "labels": ["manufacturing", "maintenance"]
+    },
+    "production_delay": {
+      "priority": 2,
+      "labels": ["manufacturing", "production"]
+    },
+    "sensor_failure": {
+      "priority": 1,
+      "labels": ["manufacturing", "critical", "sensor"]
+    },
+    "stream_alert": {
+      "priority": 2,
+      "labels": ["manufacturing", "data"]
+    },
+    "data_update": {
+      "priority": 4,
+      "labels": ["manufacturing"]
+    }
+  },
+  "webhook": {
+    "enabled": true,
+    "endpoint": "/api/webhooks/linear",
+    "secret": "your-webhook-secret"
+  },
+  "api": {
+    "enabled": true,
+    "baseUrl": "/api/linear"
+  }
+} 
