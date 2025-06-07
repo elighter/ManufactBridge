@@ -103,7 +103,7 @@ describe('DataPlatform', () => {
     });
 
     test('processing timer başlatılır', async () => {
-      const setIntervalSpy = jest.spyOn(global, 'setInterval');
+      const setIntervalSpy = jest.spyOn(global, 'setInterval').mockImplementation(() => 'timer-id');
       
       await platform.start();
       
@@ -116,7 +116,7 @@ describe('DataPlatform', () => {
     });
 
     test('processing disabled ise timer başlatılmaz', async () => {
-      const setIntervalSpy = jest.spyOn(global, 'setInterval');
+      const setIntervalSpy = jest.spyOn(global, 'setInterval').mockImplementation(() => 'timer-id');
       platform.config.processing.enabled = false;
       
       await platform.start();
@@ -133,7 +133,7 @@ describe('DataPlatform', () => {
     });
 
     test('başarılı durdurma', async () => {
-      const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+      const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation(() => {});
       
       const result = await platform.stop();
       
@@ -507,24 +507,34 @@ describe('DataPlatform', () => {
 
   describe('Processing Timer', () => {
     test('aggregation timer çalışır', async () => {
+      const setIntervalSpy = jest.spyOn(global, 'setInterval').mockImplementation(() => 'timer-id');
+      
       await platform.start();
       
       // Timer'ın başlatıldığını doğrula
-      expect(global.setInterval).toHaveBeenCalledWith(
+      expect(setIntervalSpy).toHaveBeenCalledWith(
         expect.any(Function),
         60000
       );
       
       // Processing timer'ın ayarlandığını doğrula
       expect(platform.processingTimer).toBeDefined();
+      
+      setIntervalSpy.mockRestore();
     });
 
     test('processing durdurulduğunda timer temizlenir', async () => {
+      const setIntervalSpy = jest.spyOn(global, 'setInterval').mockImplementation(() => 'timer-id');
+      const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation(() => {});
+      
       await platform.start();
       await platform.stop();
       
-      expect(global.clearInterval).toHaveBeenCalled();
+      expect(clearIntervalSpy).toHaveBeenCalled();
       expect(platform.processingTimer).toBeNull();
+      
+      setIntervalSpy.mockRestore();
+      clearIntervalSpy.mockRestore();
     });
   });
 

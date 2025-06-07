@@ -1,73 +1,73 @@
 # ManufactBridge PRD (Product Requirements Document)
 
-## 1. Ürün Tanımı
+## 1. Product Definition
 
-ManufactBridge, endüstriyel üretim sistemleriyle ERP sistemleri arasında veri entegrasyonu sağlayan, hazır kuruluma uygun ve ölçeklenebilir bir açık kaynak platformdur. UNS (Unified Namespace) prensibiyle tasarlanmış, her işletmeye kolayca uyarlanabilen kapsamlı bir endüstriyel veri çözümüdür.
+ManufactBridge is a ready-to-deploy and scalable open-source platform that provides data integration between industrial production systems and ERP systems. Designed with UNS (Unified Namespace) principles, it is a comprehensive industrial data solution that can be easily adapted to any enterprise.
 
-## 2. Paketlenmiş Çözüm Bileşenleri
+## 2. Packaged Solution Components
 
-### 2.1 Dağıtım Paketleri
+### 2.1 Distribution Packages
 
-- **Docker Compose Paketi**: Tek komutla tüm sistemi kurabilen yapılandırma
-- **Kubernetes Helm Chart**: Production ortamlar için ölçeklenebilir kurulum
-- **Installer Script**: Çeşitli ortamlar için ön koşulları kontrol edip kurulum yapabilen script
+- **Docker Compose Package**: Configuration that can install the entire system with a single command
+- **Kubernetes Helm Chart**: Scalable installation for production environments
+- **Installer Script**: Script that checks prerequisites and performs installation for various environments
 
-### 2.2 Modüler Yapı
+### 2.2 Modular Architecture
 
-Aşağıdaki bağımsız modüller isteğe bağlı etkinleştirilebilir/devre dışı bırakılabilir:
+The following independent modules can be optionally enabled/disabled:
 
 ```
 ManufactBridge/
-├── edge-connectors/          # Endüstriyel sistem bağlantıları
-│   ├── scada-connectors/     # SCADA bağlantıları (isteğe bağlı)
-│   ├── mes-connectors/       # MES bağlantıları (isteğe bağlı)
-│   ├── plc-connectors/       # PLC bağlantıları (isteğe bağlı)
-│   └── iot-connectors/       # IoT sensör bağlantıları (isteğe bağlı)
-├── UnifiedNamespace/        # Merkezi veri alanı (temel modül)
-├── data-platform/            # Veri depolama ve işleme (temel modül)
-│   ├── data-lake/            # Uzun süreli veri depolama (isteğe bağlı)
-│   ├── time-series-db/       # Zaman serisi veritabanı (isteğe bağlı)
-│   └── stream-processing/    # Gerçek zamanlı veri işleme (isteğe bağlı)
-├── analytics/                # Veri analitiği (isteğe bağlı)
-│   ├── ml-platform/          # Makine öğrenmesi (isteğe bağlı)
-│   ├── predictive-maintenance/ # Kestirimci bakım (isteğe bağlı)
-│   └── dashboards/           # Görselleştirme (isteğe bağlı)
-├── integration-layer/        # Sistem entegrasyonları (temel modül)
-│   ├── erp-connectors/       # ERP bağlantıları (isteğe bağlı)
-│   │   ├── sap-connector/    # SAP entegrasyonu (isteğe bağlı)
-│   │   ├── odoo-connector/   # Odoo entegrasyonu (isteğe bağlı)
-│   │   └── erpnext-connector/ # ERPNext entegrasyonu (isteğe bağlı)
-│   └── api-gateway/          # API yönetimi (temel modül)
-├── security-layer/           # Güvenlik bileşenleri (temel modül)
-└── management-layer/         # Sistem yönetimi (temel modül)
+├── edge-connectors/          # Industrial system connections
+│   ├── scada-connectors/     # SCADA connections (optional)
+│   ├── mes-connectors/       # MES connections (optional)
+│   ├── plc-connectors/       # PLC connections (optional)
+│   └── iot-connectors/       # IoT sensor connections (optional)
+├── UnifiedNamespace/        # Central data space (core module)
+├── data-platform/            # Data storage and processing (core module)
+│   ├── data-lake/            # Long-term data storage (optional)
+│   ├── time-series-db/       # Time series database (optional)
+│   └── stream-processing/    # Real-time data processing (optional)
+├── analytics/                # Data analytics (optional)
+│   ├── ml-platform/          # Machine learning (optional)
+│   ├── predictive-maintenance/ # Predictive maintenance (optional)
+│   └── dashboards/           # Visualization (optional)
+├── integration-layer/        # System integrations (core module)
+│   ├── erp-connectors/       # ERP connections (optional)
+│   │   ├── sap-connector/    # SAP integration (optional)
+│   │   ├── odoo-connector/   # Odoo integration (optional)
+│   │   └── erpnext-connector/ # ERPNext integration (optional)
+│   └── api-gateway/          # API management (core module)
+├── security-layer/           # Security components (core module)
+└── management-layer/         # System management (core module)
 ```
 
-## 3. Kurulum ve Yapılandırma
+## 3. Installation and Configuration
 
-### 3.1 Kurulum Gereksinimleri
+### 3.1 Installation Requirements
 
-- **Minimum Donanım**: 4 CPU, 16GB RAM, 100GB depolama
-- **Tavsiye Edilen**: 8+ CPU, 32GB+ RAM, 500GB+ depolama
-- **Yazılım Gereksinimleri**: Docker 20.10+, Kubernetes 1.21+ (opsiyonel)
+- **Minimum Hardware**: 4 CPU, 16GB RAM, 100GB storage
+- **Recommended**: 8+ CPU, 32GB+ RAM, 500GB+ storage
+- **Software Requirements**: Docker 20.10+, Kubernetes 1.21+ (optional)
 
-### 3.2 Tek Komutla Kurulum
+### 3.2 Single Command Installation
 
 ```bash
-# Docker Compose ile hızlı kurulum
+# Quick installation with Docker Compose
 ./manufactbridge.sh install --mode=docker
 
-# Kubernetes ile kurulum
+# Installation with Kubernetes
 ./manufactbridge.sh install --mode=kubernetes --namespace=manufactbridge
 ```
 
-### 3.3 Yapılandırma Dosyaları
+### 3.3 Configuration Files
 
-Temel yapılandırma `.env` ve `config.yaml` dosyaları üzerinden yapılabilir:
+Basic configuration can be done through `.env` and `config.yaml` files:
 
 ```yaml
-# config.yaml örneği
+# config.yaml example
 general:
-  company_name: "ABC Üretim A.Ş."
+  company_name: "ABC Manufacturing Inc."
   instance_id: "plant-istanbul"
   
 edge:
@@ -87,35 +87,35 @@ modules:
   machine_learning: false
 ```
 
-## 4. Bağlantı Mimarisi
+## 4. Connection Architecture
 
-### 4.1 ERP Connector Mimarisi
+### 4.1 ERP Connector Architecture
 
 ```
 ┌─────────────────┐    ┌───────────────────┐    ┌───────────────────┐
 │                 │    │                   │    │                   │
-│  Üretim Verileri│    │  Connector Bridge │    │   ERP Sistemi     │
-│  (UNS)          │───>│  (Adaptör Katmanı)│───>│   (SAP/Odoo vb.)  │
+│ Production Data │    │  Connector Bridge │    │   ERP System      │
+│ (UNS)           │───>│  (Adapter Layer)  │───>│   (SAP/Odoo etc.) │
 │                 │    │                   │    │                   │
 └─────────────────┘    └───────────────────┘    └───────────────────┘
 ```
 
-Her ERP sistemi için standart bir adaptör yapısı:
-1. Veri Format Dönüştürücü
-2. Şema Eşleyici
-3. Kimlik Doğrulama Yöneticisi
-4. İş Akışı Motoru
-5. Hata İşleme Mekanizması
+Standard adapter structure for each ERP system:
+1. Data Format Converter
+2. Schema Mapper
+3. Authentication Manager
+4. Workflow Engine
+5. Error Handling Mechanism
 
-### 4.2 API Standartları
+### 4.2 API Standards
 
-- **REST API**: OpenAPI 3.0 ile dokümante edilmiş
-- **GraphQL API**: Karmaşık veri sorguları için
-- **WebHooks**: Event-driven entegrasyon
-- **Swagger UI**: Otomatik üretilen API dokümantasyonu
+- **REST API**: Documented with OpenAPI 3.0
+- **GraphQL API**: For complex data queries
+- **WebHooks**: Event-driven integration
+- **Swagger UI**: Auto-generated API documentation
 
 ```yaml
-# OpenAPI örneği (erp-connector.yaml)
+# OpenAPI example (erp-connector.yaml)
 openapi: 3.0.0
 info:
   title: ManufactBridge ERP Connector API
@@ -123,10 +123,10 @@ info:
 paths:
   /api/v1/erp/production-orders:
     get:
-      summary: Üretim emirlerini ERP'den getir
+      summary: Get production orders from ERP
       responses:
         '200':
-          description: Başarılı
+          description: Successful
           content:
             application/json:
               schema:
@@ -135,21 +135,21 @@ paths:
                   $ref: '#/components/schemas/ProductionOrder'
 ```
 
-## 5. Güvenlik Altyapısı
+## 5. Security Infrastructure
 
-### 5.1 Varsayılan Güvenlik Özellikleri
+### 5.1 Default Security Features
 
-- **Kimlik Doğrulama**: OAuth 2.0 / JWT tabanlı
-- **Yetkilendirme**: RBAC (Role-Based Access Control)
-- **TLS Şifreleme**: Tüm ağ trafiği için varsayılan
-- **Güvenli Veri Saklama**: Hassas bilgiler için şifreleme
+- **Authentication**: OAuth 2.0 / JWT based
+- **Authorization**: RBAC (Role-Based Access Control)
+- **TLS Encryption**: Default for all network traffic
+- **Secure Data Storage**: Encryption for sensitive information
 
-### 5.2 Güvenlik Yapılandırması
+### 5.2 Security Configuration
 
 ```yaml
 # security-config.yaml
 auth:
-  provider: keycloak  # keycloak, auth0, veya custom
+  provider: keycloak  # keycloak, auth0, or custom
   oauth_settings:
     client_id: ${OAUTH_CLIENT_ID}
     client_secret: ${OAUTH_CLIENT_SECRET}
@@ -157,7 +157,7 @@ auth:
 
 tls:
   enabled: true
-  cert_manager: true  # Otomatik sertifika yönetimi
+  cert_manager: true  # Automatic certificate management
 
 rbac:
   default_roles:
@@ -166,116 +166,116 @@ rbac:
     - admin
 ```
 
-## 6. Ölçeklenebilirlik ve İşletme
+## 6. Scalability and Operations
 
-### 6.1 Production Ortamı için Bileşenler
+### 6.1 Production Environment Components
 
-- **Kubernetes Manifests**: Tüm bileşenler için hazır manifest dosyaları
-- **Ölçeklendirme Kuralları**: HPA (Horizontal Pod Autoscaler) yapılandırmaları
-- **Health Checks**: Readiness ve liveness probe'lar
-- **Backup & Recovery**: Otomatik yedekleme ve geri yükleme
+- **Kubernetes Manifests**: Ready manifest files for all components
+- **Scaling Rules**: HPA (Horizontal Pod Autoscaler) configurations
+- **Health Checks**: Readiness and liveness probes
+- **Backup & Recovery**: Automatic backup and restore
 
-### 6.2 İzleme ve Log Yönetimi
+### 6.2 Monitoring and Log Management
 
-- **Prometheus**: Tüm metrikler için merkezi toplama
-- **Grafana**: Hazır izleme dashboardları
-- **ELK/EFK Stack**: Loglama altyapısı
-- **Alerting**: E-posta, Slack, PagerDuty entegrasyonları
+- **Prometheus**: Central collection for all metrics
+- **Grafana**: Ready-to-use monitoring dashboards
+- **ELK/EFK Stack**: Logging infrastructure
+- **Alerting**: Email, Slack, PagerDuty integrations
 
-## 7. Demo ve Sandbox
+## 7. Demo and Sandbox
 
-### 7.1 Demo Verileri ve Senaryolar
+### 7.1 Demo Data and Scenarios
 
-- **Demo Data Generator**: Gerçekçi üretim verisi üreten script
-- **Senaryo Paketleri**:
-  - Kestirimci Bakım Senaryosu
-  - Üretim Kalite Analizi Senaryosu
-  - OEE İzleme Senaryosu
-  - Enerji Tüketimi Optimizasyonu Senaryosu
+- **Demo Data Generator**: Script that generates realistic production data
+- **Scenario Packages**:
+  - Predictive Maintenance Scenario
+  - Production Quality Analysis Scenario
+  - OEE Monitoring Scenario
+  - Energy Consumption Optimization Scenario
 
 ### 7.2 Online Sandbox
 
 ```bash
-# Sandbox ortamını başlat
+# Start sandbox environment
 ./manufactbridge.sh demo --scenario=predictive-maintenance
 ```
 
-## 8. Dokümantasyon
+## 8. Documentation
 
-### 8.1 Kullanıcı Dokümantasyonu
+### 8.1 User Documentation
 
-- **Hızlı Başlangıç Rehberi**: 15 dakikada kurulum
-- **Kullanım Kılavuzları**: Tüm modüller için
-- **Konfigürasyon Referansı**: Tüm ayar seçenekleri
-- **Troubleshooting**: Sık karşılaşılan sorunlar ve çözümleri
+- **Quick Start Guide**: 15-minute installation
+- **User Manuals**: For all modules
+- **Configuration Reference**: All configuration options
+- **Troubleshooting**: Common issues and solutions
 
-### 8.2 Geliştirici Dokümantasyonu
+### 8.2 Developer Documentation
 
-- **API Referansı**: Tüm API'ler için Swagger arayüzü
-- **SDK Örnekleri**: Python, JavaScript, Java ve .NET için
-- **Entegrasyon Örnekleri**: SAP, Odoo ve diğer sistemler için
-- **Mimari Şemalar**: Tüm bileşenler ve veri akışları için
+- **API Reference**: Swagger interface for all APIs
+- **SDK Examples**: For Python, JavaScript, Java and .NET
+- **Integration Examples**: For SAP, Odoo and other systems
+- **Architecture Diagrams**: For all components and data flows
 
-## 9. Lisans ve Uyumluluk
+## 9. License and Compliance
 
-- **Lisans**: MIT Lisansı
-- **Bağımlılık Denetimi**: Kullanılan tüm açık kaynak bileşenlerin lisans uyumluluğu
-- **Standartlar**: OPC UA, MQTT Sparkplug, ISA-95 standartları ile uyumlu
-- **Veri Koruma**: GDPR gereksinimleri ile uyumluluk için yapılandırma seçenekleri
+- **License**: MIT License
+- **Dependency Audit**: License compliance for all used open-source components
+- **Standards**: Compatible with OPC UA, MQTT Sparkplug, ISA-95 standards
+- **Data Protection**: Configuration options for GDPR compliance
 
-## 10. Görev Listesi ve Sürüm Planı
+## 10. Task List and Version Plan
 
-### 10.1 Hedef Sürümler
+### 10.1 Target Versions
 
-- **v1.0 (İlk Sürüm)**: Temel UNS ve ERP entegrasyonu
-- **v1.1**: Daha fazla ERP connector ve analitik özellikler
-- **v1.2**: Çoklu saha desteği ve federasyon
-- **v1.3**: Operator/Helm Chart ile Kurulum - Tek komutla Kubernetes ortamına kurulum için K8s Operator desteği
-- **v1.4**: Plug-and-Play Connector - Görsel arayüz ile yeni ERP/saha sistemleri bağlantısı
-- **v2.0**: Yapay zeka destekli anomali tespiti
-- **v2.1**: Marketplace Hazırlığı - AWS, Azure, GCP Marketplace için deployment manifest'leri
+- **v1.0 (Initial Release)**: Basic UNS and ERP integration
+- **v1.1**: More ERP connectors and analytics features
+- **v1.2**: Multi-site support and federation
+- **v1.3**: Operator/Helm Chart Installation - K8s Operator support for single-command Kubernetes environment installation
+- **v1.4**: Plug-and-Play Connector - Visual interface for connecting new ERP/field systems
+- **v2.0**: AI-powered anomaly detection
+- **v2.1**: Marketplace Readiness - Deployment manifests for AWS, Azure, GCP Marketplace
 
-### 10.2 Geliştirme Yol Haritası
+### 10.2 Development Roadmap
 
 ```
-[Ocak 2025] - Mimari tasarım tamamlanacak
-[Mart 2025] - Temel modüller geliştirme
-[Mayıs 2025] - İlk alfa testi
-[Temmuz 2025] - Beta sürümü
-[Ekim 2025] - v1.0 resmi sürüm
+[January 2025] - Architectural design completion
+[March 2025] - Core modules development
+[May 2025] - First alpha testing
+[July 2025] - Beta release
+[October 2025] - v1.0 official release
 ```
 
-## 11. Sık Sorulan Sorular (SSS)
+## 11. Frequently Asked Questions (FAQ)
 
-### 11.1 Genel Sorular
+### 11.1 General Questions
 
-**S: ManufactBridge'i mevcut ERP sistemimizle entegre edebilir miyiz?**  
-C: Evet, SAP, Odoo, ERPNext gibi yaygın ERP sistemleri için hazır konnektörler sunuyoruz. Diğer ERP sistemleri için ise genel API adaptör şablonları kullanılabilir.
+**Q: Can we integrate ManufactBridge with our existing ERP system?**  
+A: Yes, we provide ready-made connectors for popular ERP systems like SAP, Odoo, ERPNext. For other ERP systems, general API adapter templates can be used.
 
-**S: Offline çalışma modu var mı?**  
-C: Evet, edge bileşeni internet bağlantısı olmadan da çalışabilir ve bağlantı geldiğinde verileri merkezi sisteme senkronize edebilir.
+**Q: Is there an offline working mode?**  
+A: Yes, the edge component can work without internet connection and synchronize data to the central system when connection is restored.
 
-**S: Kaç üretim hattını destekleyebilir?**  
-C: ManufactBridge ölçeklenebilir bir mimariye sahiptir. Küçük işletmelerden (1-2 hat) büyük fabrikalara (100+ hat) kadar her ölçekte kullanılabilir.
+**Q: How many production lines can it support?**  
+A: ManufactBridge has a scalable architecture. It can be used at any scale from small businesses (1-2 lines) to large factories (100+ lines).
 
-### 11.2 Teknik Sorular
+### 11.2 Technical Questions
 
-**S: Mevcut SCADA sistemlerimizle entegrasyon nasıl sağlanır?**  
-C: Yaygın SCADA protokolleri (OPC UA, Modbus, MQTT) için hazır bağlantı adaptörleri bulunmaktadır. Ayrıca özel protokoller için genişletilebilir bir adaptör mimarisi mevcuttur.
+**Q: How is integration with our existing SCADA systems achieved?**  
+A: Ready connection adapters are available for common SCADA protocols (OPC UA, Modbus, MQTT). Additionally, there is an extensible adapter architecture for custom protocols.
 
-**S: Veri güvenliği nasıl sağlanıyor?**  
-C: Uçtan uca şifreleme, OAuth2/JWT ile kimlik doğrulama, rol tabanlı erişim kontrolleri ve kapsamlı denetim loglaması ile veri güvenliği sağlanmaktadır.
+**Q: How is data security ensured?**  
+A: Data security is ensured through end-to-end encryption, OAuth2/JWT authentication, role-based access controls, and comprehensive audit logging.
 
-**S: Yüksek erişilebilirlik için ne öneriyorsunuz?**  
-C: Production ortamları için Kubernetes üzerinde çoklu pod, veritabanları için replikasyon ve otomatik fail-over mekanizmaları öneriyoruz.
+**Q: What do you recommend for high availability?**  
+A: For production environments, we recommend multiple pods on Kubernetes, database replication, and automatic fail-over mechanisms.
 
-## 12. İletişim Bilgileri
+## 12. Contact Information
 
-- **Proje Web Sitesi**: [https://manufactbridge.org](https://manufactbridge.org)
+- **Project Website**: [https://manufactbridge.org](https://manufactbridge.org)
 - **GitHub Repository**: [https://github.com/ManufactBridge/ManufactBridge](https://github.com/ManufactBridge/ManufactBridge)
-- **Teknik Destek**: [support@manufactbridge.org](mailto:support@manufactbridge.org)
-- **Topluluk Forumu**: [https://community.manufactbridge.org](https://community.manufactbridge.org)
+- **Technical Support**: [support@manufactbridge.org](mailto:support@manufactbridge.org)
+- **Community Forum**: [https://community.manufactbridge.org](https://community.manufactbridge.org)
 
 ---
 
-Bu PRD, ManufactBridge'i kolayca kurulabilen ve her şirkete adapte edilebilen bir hazır paket haline getirmeye yönelik gereksinimleri tanımlamaktadır. İşletmelerin minimum geliştirme çabasıyla endüstriyel verilerini ERP sistemleriyle entegre etmelerini sağlayacak kapsamlı bir çözüm sunulmuştur. 
+This PRD defines the requirements for making ManufactBridge an easily installable and adaptable ready-to-use package for any company. A comprehensive solution has been provided that will enable businesses to integrate their industrial data with ERP systems with minimal development effort. 

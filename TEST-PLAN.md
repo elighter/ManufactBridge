@@ -1,213 +1,213 @@
-# ManufactBridge Test Planı
+# ManufactBridge Test Plan
 
-Bu belge, tüm geliştirmeler tamamlandıktan sonra ManufactBridge platformunun kapsamlı test sürecini tanımlamaktadır. Test süreci, RFC'lerde tanımlanan tüm bileşenlerin doğrulanmasını ve sistemin bir bütün olarak değerlendirilmesini hedeflemektedir.
+This document defines the comprehensive testing process for the ManufactBridge platform after all development is completed. The testing process aims to validate all components defined in the RFCs and evaluate the system as a whole.
 
-## 1. Test Kapsamı ve Hedefler
+## 1. Test Scope and Objectives
 
-### 1.1 Test Kapsamı
+### 1.1 Test Scope
 
-Test süreci aşağıdaki bileşenleri kapsamaktadır:
+The testing process covers the following components:
 
-- **UnifiedNamespace (UNS)**: Broker, Schema, ISA95, Sparkplug ve Security bileşenleri
-- **EdgeConnectors**: Tüm adaptör tipleri ve protokol dönüşüm mekanizmaları
-- **ERP Entegrasyon Katmanı**: Tüm ERP konnektörleri ve veri dönüşüm süreçleri
-- **Veri Platformu**: Data Lake, Time Series DB ve veri işleme bileşenleri
-- **Analytics Katmanı**: ML platformu, kestirimci bakım ve dashboard bileşenleri
-- **Çoklu Saha Desteği**: Federe yapı ve saha senkronizasyonu
+- **UnifiedNamespace (UNS)**: Broker, Schema, ISA95, Sparkplug and Security components
+- **EdgeConnectors**: All adapter types and protocol transformation mechanisms
+- **ERP Integration Layer**: All ERP connectors and data transformation processes
+- **Data Platform**: Data Lake, Time Series DB and data processing components
+- **Analytics Layer**: ML platform, predictive maintenance and dashboard components
+- **Multi-Site Support**: Federated structure and site synchronization
 
-### 1.2 Test Hedefleri
+### 1.2 Test Objectives
 
-- %70+ kod kapsaması ile birim testlerinin tamamlanması
-- Tüm entegrasyon noktalarının doğrulanması
-- Sistemin farklı yük koşulları altında performansının değerlendirilmesi
-- Güvenlik açıklarının tespit edilmesi ve giderilmesi
-- Kullanıcı deneyiminin doğrulanması
+- Complete unit testing with 70%+ code coverage
+- Validate all integration points
+- Evaluate system performance under different load conditions
+- Identify and resolve security vulnerabilities
+- Validate user experience
 
-## 2. Test Türleri ve Metodolojileri
+## 2. Test Types and Methodologies
 
-### 2.1 Birim Testleri
+### 2.1 Unit Tests
 
-- **Jest Framework**: JavaScript birim testleri için
-- **Mocha/Chai**: Alternatif test kütüphaneleri
-- **Istanbul (nyc)**: Kod kapsama analizi
-- **Mocking**: Harici bağımlılıkların simüle edilmesi
+- **Jest Framework**: For JavaScript unit tests
+- **Mocha/Chai**: Alternative test libraries
+- **Istanbul (nyc)**: Code coverage analysis
+- **Mocking**: Simulating external dependencies
 
-**Hedef**: Her modül için en az %70 kod kapsaması
+**Target**: At least 70% code coverage for each module
 
-### 2.2 Entegrasyon Testleri
+### 2.2 Integration Tests
 
-- **Modüller Arası Testler**: RFC-001 ve RFC-002 arasındaki veri akışı gibi
-- **Arayüz Sözleşme Testleri**: API sözleşmelerine uygunluk
-- **Mesajlaşma Entegrasyonu**: Broker mesaj iletim doğrulaması
-- **Protokol Testleri**: OPC UA, Modbus, Sparkplug protokol uyumluluğu
+- **Inter-Module Tests**: Such as data flow between RFC-001 and RFC-002
+- **Interface Contract Tests**: Compliance with API contracts
+- **Messaging Integration**: Broker message transmission validation
+- **Protocol Tests**: OPC UA, Modbus, Sparkplug protocol compatibility
 
-### 2.3 Sistem Testleri
+### 2.3 System Tests
 
-- **End-to-End Senaryolar**: Gerçek dünya iş senaryoları simülasyonu
-- **Entegre Ortam Testleri**: Tüm bileşenlerin birlikte çalıştığı ortam
-- **Dayanıklılık Testleri**: Hata toleransı ve kurtarma mekanizmaları
-- **Veri Bütünlüğü Doğrulaması**: Veri akışındaki dönüşümlerin doğruluğu
+- **End-to-End Scenarios**: Real-world business scenario simulation
+- **Integrated Environment Tests**: Environment where all components work together
+- **Resilience Tests**: Fault tolerance and recovery mechanisms
+- **Data Integrity Validation**: Accuracy of transformations in data flow
 
-### 2.4 Performans Testleri
+### 2.4 Performance Tests
 
-- **Yük Testleri**: Farklı kullanıcı ve veri yükü senaryoları
-- **Ölçeklenebilirlik Testleri**: Sistem ölçeklendiğinde performans
-- **Dayanıklılık Testleri**: Uzun süreli çalışma koşullarında performans
-- **Sınır Testleri**: Aşırı yük koşullarında sistem davranışı
+- **Load Tests**: Different user and data load scenarios
+- **Scalability Tests**: Performance when system scales
+- **Endurance Tests**: Performance under long-term operating conditions
+- **Stress Tests**: System behavior under extreme load conditions
 
-### 2.5 Güvenlik Testleri
+### 2.5 Security Tests
 
-- **Statik Kod Analizi**: Güvenlik açıklarının tespiti
-- **Kimlik Doğrulama/Yetkilendirme Testleri**: Erişim kontrolü
-- **Veri Şifreleme Testleri**: Hassas bilgilerin korunması
-- **Sızma Testleri (Pentest)**: Dış saldırı simülasyonu
+- **Static Code Analysis**: Detection of security vulnerabilities
+- **Authentication/Authorization Tests**: Access control
+- **Data Encryption Tests**: Protection of sensitive information
+- **Penetration Tests (Pentest)**: External attack simulation
 
-### 2.6 Kullanıcı Kabul Testleri (UAT)
+### 2.6 User Acceptance Tests (UAT)
 
-- **İş Senaryosu Doğrulaması**: İş süreçlerinin doğruluğu
-- **Kullanıcı Arayüzü Testleri**: Arayüzün kullanılabilirliği
-- **Dokümantasyon Doğrulaması**: Rehberlerin doğruluğu ve anlaşılırlığı
+- **Business Scenario Validation**: Correctness of business processes
+- **User Interface Tests**: Usability of the interface
+- **Documentation Validation**: Accuracy and clarity of guides
 
-## 3. Test Ortamları
+## 3. Test Environments
 
-### 3.1 Geliştirme Ortamı
+### 3.1 Development Environment
 
-- Lokal geliştirme makineleri
-- Birim testleri ve temel entegrasyon testleri
-- Sanallaştırılmış alt bileşenler
+- Local development machines
+- Unit tests and basic integration tests
+- Virtualized sub-components
 
-### 3.2 Test Ortamı
+### 3.2 Test Environment
 
-- Docker Compose temelli tam entegre sistem
-- Tüm entegrasyon testleri için
-- Simüle edilmiş veri kaynakları
+- Docker Compose based fully integrated system
+- For all integration tests
+- Simulated data sources
 
-### 3.3 Ön Üretim (Staging) Ortamı
+### 3.3 Pre-Production (Staging) Environment
 
-- Kubernetes üzerinde tam ölçeklenebilir ortam
-- Performans ve güvenlik testleri için
-- Üretim verilerine benzer test verileri
+- Fully scalable environment on Kubernetes
+- For performance and security tests
+- Test data similar to production data
 
-### 3.4 Beta Test Ortamı
+### 3.4 Beta Test Environment
 
-- Seçili müşteri tesislerinde kurulacak pilot ortamlar
-- Gerçek veri kaynakları ve gerçek süreçler
-- Kullanıcı geri bildirimleri
+- Pilot environments to be installed at selected customer facilities
+- Real data sources and real processes
+- User feedback
 
-## 4. Test Otomasyon Stratejisi
+## 4. Test Automation Strategy
 
-### 4.1 CI/CD Pipeline Entegrasyonu
+### 4.1 CI/CD Pipeline Integration
 
-- GitHub Actions / Jenkins / GitLab CI entegrasyonu
-- Her commit için otomatik birim ve entegrasyon testleri
-- Ana dalda birleştirilmeden önce kalite kapıları
+- GitHub Actions / Jenkins / GitLab CI integration
+- Automatic unit and integration tests for each commit
+- Quality gates before merging to main branch
 
-### 4.2 Test Otomasyon Çerçevesi
+### 4.2 Test Automation Framework
 
-- Birim Test Otomasyonu: Jest + Istanbul
-- API Test Otomasyonu: Postman, SuperTest
-- Entegrasyon Test Otomasyonu: Custom test harness
-- Performans Test Otomasyonu: k6, JMeter
+- Unit Test Automation: Jest + Istanbul
+- API Test Automation: Postman, SuperTest
+- Integration Test Automation: Custom test harness
+- Performance Test Automation: k6, JMeter
 
-### 4.3 Test Veri Yönetimi
+### 4.3 Test Data Management
 
-- Test veri üretim araçları
-- Endüstriyel veri simülatörleri
-- Test veri seti kütüphanesi
+- Test data generation tools
+- Industrial data simulators
+- Test data set library
 
-## 5. Test Döngüsü ve Kabul Kriterleri
+## 5. Test Cycle and Acceptance Criteria
 
-### 5.1 Test Yürütme Döngüsü
+### 5.1 Test Execution Cycle
 
-1. **Hazırlık Aşaması**: Test planlarının ve senaryoların hazırlanması (2 hafta)
-2. **Birim Test Aşaması**: Modül düzeyinde testler (4 hafta)
-3. **Entegrasyon Test Aşaması**: Modüller arası etkileşim testleri (3 hafta)
-4. **Sistem Test Aşaması**: End-to-end testler (3 hafta)
-5. **Performans Test Aşaması**: Yük ve ölçeklendirme testleri (2 hafta)
-6. **Güvenlik Test Aşaması**: Güvenlik açığı taramaları (2 hafta)
-7. **Regresyon Test Aşaması**: Tüm bileşenlerin yeniden değerlendirilmesi (2 hafta)
-8. **Beta Test Aşaması**: Pilot uygulamalar ve son kullanıcı testleri (4 hafta)
+1. **Preparation Phase**: Preparation of test plans and scenarios (2 weeks)
+2. **Unit Test Phase**: Module-level tests (4 weeks)
+3. **Integration Test Phase**: Inter-module interaction tests (3 weeks)
+4. **System Test Phase**: End-to-end tests (3 weeks)
+5. **Performance Test Phase**: Load and scaling tests (2 weeks)
+6. **Security Test Phase**: Security vulnerability scans (2 weeks)
+7. **Regression Test Phase**: Re-evaluation of all components (2 weeks)
+8. **Beta Test Phase**: Pilot applications and end-user tests (4 weeks)
 
-**Toplam Test Süresi**: ~20 hafta (5 ay)
+**Total Test Duration**: ~20 weeks (5 months)
 
-### 5.2 Kabul Kriterleri
+### 5.2 Acceptance Criteria
 
-- **Birim Testleri**: %70+ kod kapsaması
-- **Entegrasyon Testleri**: Tüm API ve mesaj akışlarının başarılı olması
-- **Performans Kriterleri**:
-  - Ortalama API yanıt süresi: < 200ms
-  - Mesaj işleme gecikmesi: < 100ms
-  - 1000+ cihaz/saniye veri akışı desteği
-  - Yüksek erişilebilirlik: %99.9 uptime
-- **Güvenlik Kriterleri**:
-  - Kritik ve yüksek güvenlik açığı olmaması
-  - Veri şifreleme standartlarına uygunluk
-- **Kullanıcı Kabul Kriterleri**:
-  - Tüm ana iş senaryolarının başarılı tamamlanması
-  - İyi derecede kullanıcı memnuniyeti geri bildirimi
+- **Unit Tests**: 70%+ code coverage
+- **Integration Tests**: Successful completion of all API and message flows
+- **Performance Criteria**:
+  - Average API response time: < 200ms
+  - Message processing latency: < 100ms
+  - 1000+ device/second data flow support
+  - High availability: 99.9% uptime
+- **Security Criteria**:
+  - No critical and high security vulnerabilities
+  - Compliance with data encryption standards
+- **User Acceptance Criteria**:
+  - Successful completion of all main business scenarios
+  - Good level of user satisfaction feedback
 
-## 6. Hata İzleme ve Raporlama
+## 6. Error Tracking and Reporting
 
-### 6.1 Hata Sınıflandırma
+### 6.1 Error Classification
 
-- **Kritik (P0)**: Sistemin çalışmasını engelleyen hatalar
-- **Yüksek (P1)**: Temel işlevselliği etkileyen hatalar
-- **Orta (P2)**: Belirli senaryolarda görülen ya da geçici çözümü olan hatalar
-- **Düşük (P3)**: Küçük UX sorunları veya kozmetik hatalar
+- **Critical (P0)**: Errors that prevent the system from working
+- **High (P1)**: Errors affecting basic functionality
+- **Medium (P2)**: Errors seen in specific scenarios or with temporary solutions
+- **Low (P3)**: Minor UX issues or cosmetic errors
 
-### 6.2 Hata Yaşam Döngüsü
+### 6.2 Error Lifecycle
 
-1. Tespit → 2. Raporlama → 3. Önceliklendirme → 4. Atama → 5. Çözüm → 6. Doğrulama → 7. Kapatma
+1. Detection → 2. Reporting → 3. Prioritization → 4. Assignment → 5. Resolution → 6. Validation → 7. Closure
 
-### 6.3 Raporlama
+### 6.3 Reporting
 
-- Haftalık durum raporları
-- Test ilerleme metrikleri
-- Açık/kapatılan hata istatistikleri
-- Kod kapsamı raporları
+- Weekly status reports
+- Test progress metrics
+- Open/closed error statistics
+- Code coverage reports
 
-## 7. Test Ekibi ve Sorumluluklar
+## 7. Test Team and Responsibilities
 
-- **Test Yöneticisi**: Test stratejisinin planlanması ve yönetimi
-- **Test Mühendisleri**: Test senaryoları oluşturma ve yürütme
-- **Otomasyon Uzmanları**: Test otomasyon altyapısının geliştirilmesi
-- **Güvenlik Test Uzmanı**: Güvenlik testlerinin yürütülmesi
-- **Performans Test Uzmanı**: Performans ve yük testlerinin yürütülmesi
+- **Test Manager**: Planning and managing test strategy
+- **Test Engineers**: Creating and executing test scenarios
+- **Automation Specialists**: Developing test automation infrastructure
+- **Security Test Specialist**: Executing security tests
+- **Performance Test Specialist**: Executing performance and load tests
 
-## 8. Riskler ve Azaltma Stratejileri
+## 8. Risks and Mitigation Strategies
 
-### 8.1 Potansiyel Riskler
+### 8.1 Potential Risks
 
-- Dağıtık mimari nedeniyle entegrasyon sorunları
-- Üçüncü taraf bileşenlerin uyumluluğu
-- Gerçek endüstriyel ortamlarda beklenmeyen sorunlar
-- Ölçeklenebilirlik sınırlamaları
+- Integration issues due to distributed architecture
+- Compatibility of third-party components
+- Unexpected issues in real industrial environments
+- Scalability limitations
 
-### 8.2 Risk Azaltma Stratejileri
+### 8.2 Risk Mitigation Strategies
 
-- Erken ve sürekli entegrasyon testleri
-- Simüle edilmiş endüstriyel veri kaynaklarıyla kapsamlı testler
-- Artan yük senaryolarıyla kademeli performans testleri
-- Endüstriyel ortamları temsil eden test ortamları
+- Early and continuous integration tests
+- Comprehensive tests with simulated industrial data sources
+- Gradual performance tests with increasing load scenarios
+- Test environments representing industrial environments
 
-## 9. Test Çıktıları ve Dokümantasyon
+## 9. Test Outputs and Documentation
 
-- Test planları ve test senaryoları
-- Test otomasyonu kod tabanı
-- Test sonuç raporları
-- Hata raporları ve çözüm kayıtları
-- Performans test sonuçları
-- Kod kapsamı raporları
-- Güvenlik değerlendirme raporu
-- Beta test geri bildirimleri
+- Test plans and test scenarios
+- Test automation codebase
+- Test result reports
+- Error reports and resolution records
+- Performance test results
+- Code coverage reports
+- Security assessment report
+- Beta test feedback
 
-## 10. Sürekli İyileştirme
+## 10. Continuous Improvement
 
-- Test süreçlerinin düzenli gözden geçirilmesi
-- Otomasyon kapsamının genişletilmesi
-- Test veri setlerinin zenginleştirilmesi
-- Test metriklerinin analizi ve iyileştirme fırsatlarının belirlenmesi
+- Regular review of test processes
+- Expanding automation scope
+- Enriching test data sets
+- Analysis of test metrics and identification of improvement opportunities
 
 ---
 
-Bu test planı, ManufactBridge platformunun tüm bileşenlerinin titizlikle test edilmesini ve endüstriyel ortamlarda güvenilir bir şekilde çalışmasını sağlamak için oluşturulmuştur. Plan, geliştirme tamamlandıktan sonra yaklaşık 5 aylık bir test sürecini kapsamaktadır ve projenin gereksinimlerine göre güncellenecektir. 
+This test plan has been created to ensure that all components of the ManufactBridge platform are rigorously tested and work reliably in industrial environments. The plan covers approximately 5 months of testing process after development is completed and will be updated according to project requirements. 

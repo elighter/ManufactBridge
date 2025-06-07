@@ -1,6 +1,6 @@
 /**
- * @fileoverview ManufactBridge - Ana Giriş Noktası
- * Modern Üretim-ERP Veri Platformu
+ * @fileoverview ManufactBridge - Main Entry Point
+ * Modern Manufacturing-ERP Data Platform
  */
 
 const { SecurityManager } = require('./Security');
@@ -10,14 +10,14 @@ const { DataPlatform, InfluxDBClient, StreamProcessor } = require('./DataPlatfor
 const { ERPIntegration, SAPConnector } = require('./ERPIntegration');
 
 /**
- * ManufactBridge Ana Sınıfı
- * Tüm platform bileşenlerini yönetir
+ * ManufactBridge Main Class
+ * Manages all platform components
  */
 class ManufactBridge {
   constructor(config = {}) {
     this.config = config;
     
-    // Bileşenler
+    // Components
     this.security = null;
     this.uns = null;
     this.dataPlatform = null;
@@ -28,93 +28,93 @@ class ManufactBridge {
   }
   
   /**
-   * Platform'u başlatır
+   * Starts the platform
    */
   async start() {
     try {
-      console.log('🚀 ManufactBridge başlatılıyor...');
+      console.log('🚀 Starting ManufactBridge...');
       
-      // Güvenlik katmanını başlat
+      // Start security layer
       if (this.config.security?.enabled) {
         this.security = new SecurityManager(this.config.security);
         await this.security.start();
-        console.log('✅ Güvenlik katmanı başlatıldı');
+        console.log('✅ Security layer started');
       }
       
-      // UNS'yi başlat
+      // Start UNS
       this.uns = new UNSManager(this.config.uns);
       await this.uns.start();
-      console.log('✅ UNS başlatıldı');
+      console.log('✅ UNS started');
       
-      // Veri platformunu başlat
+      // Start data platform
       this.dataPlatform = new DataPlatform(this.config.dataPlatform);
       await this.dataPlatform.start();
-      console.log('✅ Veri platformu başlatıldı');
+      console.log('✅ Data platform started');
       
-      // ERP entegrasyonunu başlat
+      // Start ERP integration
       if (this.config.erp?.enabled) {
         this.erpIntegration = new ERPIntegration(this.config.erp);
         await this.erpIntegration.start();
-        console.log('✅ ERP entegrasyonu başlatıldı');
+        console.log('✅ ERP integration started');
       }
       
-      // Edge adapter'ları başlat
+      // Start edge adapters
       await this._startAdapters();
       
-      // Event handler'ları ayarla
+      // Setup event handlers
       this._setupEventHandlers();
       
       this.started = true;
-      console.log('🎉 ManufactBridge başarıyla başlatıldı!');
+      console.log('🎉 ManufactBridge started successfully!');
       
     } catch (error) {
-      console.error('❌ ManufactBridge başlatma hatası:', error.message);
+      console.error('❌ ManufactBridge startup error:', error.message);
       throw error;
     }
   }
   
   /**
-   * Platform'u durdurur
+   * Stops the platform
    */
   async stop() {
     try {
-      console.log('🛑 ManufactBridge durduruluyor...');
+      console.log('🛑 Stopping ManufactBridge...');
       
-      // Adapter'ları durdur
+      // Stop adapters
       for (const [id, adapter] of this.adapters) {
         await adapter.stop();
       }
       
-      // ERP entegrasyonunu durdur
+      // Stop ERP integration
       if (this.erpIntegration) {
         await this.erpIntegration.stop();
       }
       
-      // Veri platformunu durdur
+      // Stop data platform
       if (this.dataPlatform) {
         await this.dataPlatform.stop();
       }
       
-      // UNS'yi durdur
+      // Stop UNS
       if (this.uns) {
         await this.uns.stop();
       }
       
-      // Güvenlik katmanını durdur
+      // Stop security layer
       if (this.security) {
         await this.security.stop();
       }
       
       this.started = false;
-      console.log('✅ ManufactBridge durduruldu');
+      console.log('✅ ManufactBridge stopped');
       
     } catch (error) {
-      console.error('❌ ManufactBridge durdurma hatası:', error.message);
+      console.error('❌ ManufactBridge shutdown error:', error.message);
     }
   }
   
   /**
-   * Platform durumunu döndürür
+   * Returns platform status
    */
   getStatus() {
     return {
@@ -131,7 +131,7 @@ class ManufactBridge {
   }
   
   /**
-   * Edge adapter'ları başlatır
+   * Starts edge adapters
    */
   async _startAdapters() {
     if (!this.config.adapters) return;
@@ -145,23 +145,23 @@ class ManufactBridge {
             adapter = new OPCUAAdapter(adapterConfig);
             break;
           default:
-            console.warn(`Desteklenmeyen adapter tipi: ${adapterConfig.type}`);
+            console.warn(`Unsupported adapter type: ${adapterConfig.type}`);
             continue;
         }
         
         await adapter.start();
         this.adapters.set(adapterId, adapter);
         
-        console.log(`✅ Adapter başlatıldı: ${adapterId} (${adapterConfig.type})`);
+        console.log(`✅ Adapter started: ${adapterId} (${adapterConfig.type})`);
         
       } catch (error) {
-        console.error(`❌ Adapter başlatma hatası (${adapterId}):`, error.message);
+        console.error(`❌ Adapter startup error (${adapterId}):`, error.message);
       }
     }
   }
   
   /**
-   * Event handler'ları ayarlar
+   * Sets up event handlers
    */
   _setupEventHandlers() {
     // UNS event'leri
@@ -178,7 +178,7 @@ class ManufactBridge {
             await this.erpIntegration.sendToERP(data);
           }
         } catch (error) {
-          console.error('UNS veri işleme hatası:', error.message);
+          console.error('UNS data processing error:', error.message);
         }
       });
     }
@@ -192,12 +192,12 @@ class ManufactBridge {
             await this.uns.publish(data.topic, data.payload);
           }
         } catch (error) {
-          console.error(`Adapter veri gönderme hatası (${adapterId}):`, error.message);
+          console.error(`Adapter data sending error (${adapterId}):`, error.message);
         }
       });
     }
     
-    // Stream processing alert'leri
+    // Stream processing alerts
     if (this.dataPlatform) {
       this.dataPlatform.on('streamAlert', (alert) => {
         console.warn('🚨 Stream Alert:', alert);
@@ -220,27 +220,27 @@ module.exports = {
   SAPConnector
 };
 
-// Eğer bu dosya doğrudan çalıştırılıyorsa
+// If this file is run directly
 if (require.main === module) {
   const config = require('../config/default.json');
   const platform = new ManufactBridge(config);
   
   // Graceful shutdown
   process.on('SIGINT', async () => {
-    console.log('\n🛑 Shutdown signal alındı...');
+    console.log('\n🛑 Shutdown signal received...');
     await platform.stop();
     process.exit(0);
   });
   
   process.on('SIGTERM', async () => {
-    console.log('\n🛑 Terminate signal alındı...');
+    console.log('\n🛑 Terminate signal received...');
     await platform.stop();
     process.exit(0);
   });
   
-  // Platform'u başlat
+  // Start platform
   platform.start().catch((error) => {
-    console.error('❌ Platform başlatma hatası:', error);
+    console.error('❌ Platform startup error:', error);
     process.exit(1);
   });
 } 

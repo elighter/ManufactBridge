@@ -1,32 +1,32 @@
-# RFC-005: Analitik Katmanı ve İş Zekası Entegrasyonu
+# RFC-005: Analytics Layer and Business Intelligence Integration
 
-## Özet
+## Summary
 
-Bu RFC, ManufactBridge platformunun endüstriyel verileri anlamlandırma, görselleştirme ve karar verme süreçlerini destekleme yeteneklerini sağlayan Analitik Katmanı ve İş Zekası Entegrasyonu'nu tanımlar. Bu katman, ham üretim verilerini anlamlı içgörülere dönüştürecek, kestirimci bakım, kalite analitiği ve operasyonel mükemmellik için gerekli analitik fonksiyonları sağlayacaktır.
+This RFC defines the Analytics Layer and Business Intelligence Integration that provides the ManufactBridge platform's capabilities for understanding, visualizing, and supporting decision-making processes with industrial data. This layer will transform raw production data into meaningful insights and provide the necessary analytical functions for predictive maintenance, quality analytics, and operational excellence.
 
-## Motivasyon
+## Motivation
 
-Endüstriyel ortamlarda toplanan büyük miktardaki verinin gerçek değeri, verileri eyleme geçirilebilir içgörülere dönüştürecek güçlü analitik yetenekleriyle ortaya çıkar. Üretim performansını artırmak, kestirimci bakımı mümkün kılmak, maliyetleri düşürmek ve kaliteyi iyileştirmek için anlamlı analitik çözümlere ihtiyaç vardır. Bu RFC, endüstriyel veri analitiğinin tüm aşamalarını destekleyecek kapsamlı bir analitik katmanı tanımlamayı amaçlar.
+The real value of large amounts of data collected in industrial environments emerges through powerful analytical capabilities that transform data into actionable insights. Meaningful analytical solutions are needed to improve production performance, enable predictive maintenance, reduce costs, and improve quality. This RFC aims to define a comprehensive analytics layer that will support all phases of industrial data analytics.
 
-## Tasarım Detayları
+## Design Details
 
-### 1. Analitik Katmanı Mimarisi
+### 1. Analytics Layer Architecture
 
-Analitik Katmanı aşağıdaki temel bileşenlerden oluşacaktır:
+The Analytics Layer will consist of the following core components:
 
-1. **İstatistiksel Analiz Servisleri**: Temel ve ileri düzey istatistiksel analizler
-2. **Makine Öğrenmesi Platformu**: Model geliştirme, eğitim ve dağıtım altyapısı
-3. **Kestirimci Bakım Modülleri**: Ekipman arızalarını önceden tahmin etme
-4. **Kalite Analitik Modülleri**: Ürün kalitesini etkileyen faktörlerin analizi
-5. **İş Zekası ve Görselleştirme**: Dashboard ve rapor oluşturma araçları
-6. **OEE (Overall Equipment Effectiveness) İzleme**: Ekipman verimliliği takibi
-7. **Anomali Tespit Motoru**: Normal olmayan durumların tespiti
-8. **Öneri Sistemleri**: Süreç optimizasyonu ve karar destek önerileri
+1. **Statistical Analysis Services**: Basic and advanced statistical analyses
+2. **Machine Learning Platform**: Model development, training, and deployment infrastructure
+3. **Predictive Maintenance Modules**: Predicting equipment failures in advance
+4. **Quality Analytics Modules**: Analysis of factors affecting product quality
+5. **Business Intelligence and Visualization**: Dashboard and report creation tools
+6. **OEE (Overall Equipment Effectiveness) Monitoring**: Equipment efficiency tracking
+7. **Anomaly Detection Engine**: Detection of abnormal conditions
+8. **Recommendation Systems**: Process optimization and decision support recommendations
 
 ```
                    +---------------------+
                    |                     |
-                   |  Veri Platformu     |
+                   |  Data Platform      |
                    |  (Data Lake, TSDB)  |
                    |                     |
                    +---------+-----------+
@@ -34,17 +34,17 @@ Analitik Katmanı aşağıdaki temel bileşenlerden oluşacaktır:
                              v
 +-------------------+      +------------------------+      +-------------------+
 |                   |      |                        |      |                   |
-|  Model            |      |  Analitik              |      |  İş Zekası &      |
-|  Geliştirme       |<---->|  Çekirdek              |<---->|  Görselleştirme   |
-|  Ortamı           |      |  Servisleri            |      |                   |
+|  Model            |      |  Analytics             |      |  Business Intel. & |
+|  Development      |<---->|  Core                  |<---->|  Visualization     |
+|  Environment      |      |  Services              |      |                   |
 |                   |      |                        |      |                   |
 +-------------------+      +------------------------+      +-------------------+
                                       |
                                       v
                              +------------------+
                              |                  |
-                             |  Analitik        |
-                             |  Uygulamalar     |
+                             |  Analytics       |
+                             |  Applications    |
                              |                  |
                              +--------+---------+
                                       |
@@ -52,69 +52,69 @@ Analitik Katmanı aşağıdaki temel bileşenlerden oluşacaktır:
             |                     |       |                     |
 +-----------v----------+ +--------v-----+ +---------v---------+ +----------v-----------+
 |                      | |              | |                   | |                      |
-| Kestirimci Bakım     | | Kalite       | | OEE Optimizasyon  | | Enerji Tüketimi      |
-| Uygulamaları         | | Analizi      | | Modülleri         | | Analizi              |
+| Predictive Maint.    | | Quality      | | OEE Optimization  | | Energy Consumption   |
+| Applications         | | Analysis     | | Modules           | | Analysis             |
 |                      | |              | |                   | |                      |
 +----------------------+ +--------------+ +-------------------+ +----------------------+
 ```
 
-### 2. Makine Öğrenmesi Platformu
+### 2. Machine Learning Platform
 
-Makine Öğrenmesi Platformu şu bileşenlerden oluşacak:
+The Machine Learning Platform will consist of the following components:
 
-1. **Model Geliştirme Araçları**: Jupyter Notebook, Python ve R desteği
-2. **Model Eğitim Altyapısı**: Ölçeklenebilir model eğitimi
-3. **Model Dağıtım Sistemi**: Modellerin üretim ortamında çalıştırılması
-4. **Model İzleme**: Model performansının sürekli izlenmesi
-5. **Model Versiyonlama**: Modellerin versiyon kontrolü
-6. **Öznitelik Mağazası (Feature Store)**: Yeniden kullanılabilir öznitelikler
-7. **AutoML Yetenek**: Otomatik model geliştirme ve optimizasyon
+1. **Model Development Tools**: Jupyter Notebook, Python and R support
+2. **Model Training Infrastructure**: Scalable model training
+3. **Model Deployment System**: Running models in production environment
+4. **Model Monitoring**: Continuous monitoring of model performance
+5. **Model Versioning**: Version control of models
+6. **Feature Store**: Reusable features
+7. **AutoML Capabilities**: Automatic model development and optimization
 
-### 3. Kestirimci Bakım Modülleri
+### 3. Predictive Maintenance Modules
 
-Kestirimci Bakım bileşeni aşağıdaki özellikleri içerecek:
+The Predictive Maintenance component will include the following features:
 
-1. **Ekipman Durum İzleme**: Gerçek zamanlı ekipman durumu izleme
-2. **Arıza Tahmin Modelleri**: Farklı arıza tipleri için tahmin modelleri
-3. **Sağlık Skoru Hesaplama**: Ekipmanların sağlık durumu skorlaması
-4. **Kalan Faydalı Ömür Tahmini**: Ekipmanların kalan kullanım ömrünün tahmini
-5. **Bakım Planlama Optimizasyonu**: Optimal bakım planı önerileri
-6. **Arıza Analizi ve Kök Neden Tespiti**: Arızaların analizini ve kök nedenini tespit etme
+1. **Equipment Condition Monitoring**: Real-time equipment condition monitoring
+2. **Failure Prediction Models**: Prediction models for different failure types
+3. **Health Score Calculation**: Health status scoring of equipment
+4. **Remaining Useful Life Estimation**: Estimation of equipment's remaining useful life
+5. **Maintenance Planning Optimization**: Optimal maintenance plan recommendations
+6. **Failure Analysis and Root Cause Detection**: Analysis of failures and root cause identification
 
-### 4. İş Zekası ve Görselleştirme
+### 4. Business Intelligence and Visualization
 
-İş Zekası ve Görselleştirme bileşeni şu özellikleri sunacak:
+The Business Intelligence and Visualization component will offer the following features:
 
-1. **Üretim Dashboard'ları**: Gerçek zamanlı üretim takibi
-2. **KPI İzleme**: Anahtar performans göstergelerinin izlenmesi
-3. **Drill-Down Analizler**: Detaya inebilen interaktif analizler
-4. **Eğilim Analizi**: Üretim verilerinde eğilimlerin tespiti
-5. **Özelleştirilebilir Raporlama**: Departman ve rol bazlı raporlar
-6. **Veri Keşfi Araçları**: Self-service veri keşfi imkanları
-7. **Mobil Dashboard Desteği**: Mobil cihazlarda erişilebilir dashboard'lar
+1. **Production Dashboards**: Real-time production monitoring
+2. **KPI Monitoring**: Monitoring of key performance indicators
+3. **Drill-Down Analyses**: Interactive analyses with detail capability
+4. **Trend Analysis**: Detection of trends in production data
+5. **Customizable Reporting**: Department and role-based reports
+6. **Data Discovery Tools**: Self-service data discovery capabilities
+7. **Mobile Dashboard Support**: Accessible dashboards on mobile devices
 
-### 5. Analitik Uygulamalar
+### 5. Analytics Applications
 
-Analitik Katmanı, aşağıdaki hazır analitik uygulamaları içerecek:
+The Analytics Layer will include the following ready-made analytics applications:
 
-1. **OEE (Overall Equipment Effectiveness)**: Ekipman verimliliğinin izlenmesi ve analizi
-2. **Kalite Kontrol**: Kalite performansı izleme ve sapma analizi
-3. **Enerji Tüketimi Optimizasyonu**: Enerji kullanımının izlenmesi ve optimizasyonu
-4. **Malzeme Kullanım Analizi**: Malzeme kullanımının izlenmesi ve kaybın azaltılması
-5. **Süreç Optimizasyonu**: Üretim süreçlerinin optimizasyonu
-6. **Tedarik Zinciri Analitik**: Tedarik zinciri performansının analizi
-7. **İnsan Performansı Analizi**: Operatör performans analizi ve eğitim ihtiyaçları
+1. **OEE (Overall Equipment Effectiveness)**: Monitoring and analysis of equipment efficiency
+2. **Quality Control**: Quality performance monitoring and deviation analysis
+3. **Energy Consumption Optimization**: Monitoring and optimization of energy usage
+4. **Material Usage Analysis**: Monitoring material usage and reducing waste
+5. **Process Optimization**: Optimization of production processes
+6. **Supply Chain Analytics**: Analysis of supply chain performance
+7. **Human Performance Analysis**: Operator performance analysis and training needs
 
-### 6. Analitik Akışı Yapılandırması
+### 6. Analytics Flow Configuration
 
-Analitik modeller ve uygulamalar için YAML tabanlı yapılandırma:
+YAML-based configuration for analytics models and applications:
 
 ```yaml
-# analytics-model-config.yaml örneği
+# analytics-model-config.yaml example
 model:
   name: "pump_failure_prediction"
   type: "predictive_maintenance"
-  description: "Pompa arızalarını 24-48 saat önceden tahmin eden model"
+  description: "Model that predicts pump failures 24-48 hours in advance"
   version: "1.0.0"
   
 data_sources:
@@ -157,43 +157,43 @@ deployment:
 visualization:
   dashboard: "equipment_health"
   panels:
-    - title: "Arıza Olasılığı"
+    - title: "Failure Probability"
       chart_type: "gauge"
       range: [0, 1]
-    - title: "Sağlık Eğilimi"
+    - title: "Health Trend"
       chart_type: "time_series"
       time_range: "7d"
 ```
 
-## Uygulama Adımları
+## Implementation Steps
 
-1. Temel analitik platformu altyapısının kurulması
-2. Jupyter Notebook ortamı ve veri bilimi araçlarının entegrasyonu
-3. İstatistiksel analiz kütüphanelerinin entegrasyonu
-4. Makine öğrenmesi model eğitim altyapısının kurulması
-5. Model dağıtım ve izleme mekanizmalarının geliştirilmesi
-6. Grafana ve Superset gibi görselleştirme araçlarının entegrasyonu
-7. Kestirimci bakım ve kalite analitiği modüllerinin geliştirilmesi
-8. Dashboard ve rapor şablonlarının hazırlanması
-9. Analitik model konfigürasyon API'lerinin geliştirilmesi
+1. Installation of basic analytics platform infrastructure
+2. Integration of Jupyter Notebook environment and data science tools
+3. Integration of statistical analysis libraries
+4. Installation of machine learning model training infrastructure
+5. Development of model deployment and monitoring mechanisms
+6. Integration of visualization tools like Grafana and Superset
+7. Development of predictive maintenance and quality analytics modules
+8. Preparation of dashboard and report templates
+9. Development of analytics model configuration APIs
 
-## Alternatifler
+## Alternatives
 
-Aşağıdaki alternatifler değerlendirildi:
+The following alternatives were evaluated:
 
-1. **Kurumsal İş Zekası Araçları**: Ticari BI araçları yerine açık kaynak çözümler tercih edildi
-2. **Tek Bir Analitik Platform**: Farklı ihtiyaçlar için özelleşmiş araçları bir araya getirmek daha uygun bulundu
-3. **Bulut Bazlı ML Servisleri**: On-premise deployment ihtiyaçları nedeniyle self-hosted çözümler tercih edildi
+1. **Enterprise Business Intelligence Tools**: Open source solutions were preferred over commercial BI tools
+2. **Single Analytics Platform**: It was found more suitable to bring together specialized tools for different needs
+3. **Cloud-Based ML Services**: Self-hosted solutions were preferred due to on-premise deployment needs
 
-## Sonuç
+## Conclusion
 
-Analitik Katmanı ve İş Zekası Entegrasyonu, ManufactBridge platformunun veri değer zincirini tamamlayan kritik bir bileşendir. Bu katman sayesinde, üretim verilerinden elde edilen içgörüler, daha verimli operasyonlar, daha yüksek kalite ve daha düşük maliyetler sağlayacaktır.
+The Analytics Layer and Business Intelligence Integration is a critical component that completes the data value chain of the ManufactBridge platform. Through this layer, insights gained from production data will provide more efficient operations, higher quality, and lower costs.
 
-## Referanslar
+## References
 
 1. Industry 4.0 Analytics Best Practices
 2. Predictive Maintenance Methodologies
 3. OEE (Overall Equipment Effectiveness) Standards
-4. Grafana ve Superset Documentation
-5. MLflow ve Kubeflow Documentation
-6. Python Veri Bilimi Ekosistemleri (NumPy, Pandas, Scikit-learn) 
+4. Grafana and Superset Documentation
+5. MLflow and Kubeflow Documentation
+6. Python Data Science Ecosystems (NumPy, Pandas, Scikit-learn) 

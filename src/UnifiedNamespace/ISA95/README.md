@@ -1,47 +1,47 @@
-# ISA-95 Standartı
+# ISA-95 Standard
 
-Bu dizin, ManufactBridge projesinde ISA-95 standardını uygulamak için gerekli dosyaları içerir.
+This directory contains the necessary files to implement the ISA-95 standard in the ManufactBridge project.
 
-## ISA-95 Nedir?
+## What is ISA-95?
 
-ISA-95, üretim yönetim sistemleri ile kurumsal sistemler arasındaki entegrasyonu tanımlayan uluslararası bir standarttır. İşletme Kaynak Planlaması (ERP) ve Üretim Yönetim Sistemleri (MES) arasındaki iletişimi standartlaştırır.
+ISA-95 is an international standard that defines the integration between manufacturing management systems and enterprise systems. It standardizes communication between Enterprise Resource Planning (ERP) and Manufacturing Execution Systems (MES).
 
-## Hiyerarşi Modeli
+## Hierarchy Model
 
-ISA-95 standardı, fabrika ve üretim yapılarını şu şekilde hiyerarşik olarak tanımlar:
+The ISA-95 standard defines factory and production structures hierarchically as follows:
 
-- Seviye 0: Fiziksel üretim süreci
-- Seviye 1: Sensörler ve aktüatörler
-- Seviye 2: Kontrol sistemleri (PLC, DCS, SCADA)
-- Seviye 3: Üretim operasyonları yönetimi (MES)
-- Seviye 4: İşletme planlaması ve lojistik (ERP)
+- Level 0: Physical production process
+- Level 1: Sensors and actuators
+- Level 2: Control systems (PLC, DCS, SCADA)
+- Level 3: Manufacturing operations management (MES)
+- Level 4: Business planning and logistics (ERP)
 
-## ManufactBridge'de ISA-95
+## ISA-95 in ManufactBridge
 
-ManufactBridge, Unified Namespace (UNS) içinde ISA-95 hiyerarşisini konu yolları olarak aşağıdaki formatta kullanır:
+ManufactBridge uses the ISA-95 hierarchy as topic paths within the Unified Namespace (UNS) in the following format:
 
 ```
 manufactbridge/enterprise/site/area/line/device/datatype/tagname
 ```
 
-Örneğin:
+For example:
 ```
 manufactbridge/acme/istanbul/machine-shop/line1/cnc5/data/temperature
 ```
 
-## Konu Yolları
+## Topic Paths
 
-ISA-95 tabanlı konu yolları şunları içerir:
+ISA-95 based topic paths include:
 
-- **enterprise**: İşletme adı
-- **site**: Tesis/Fabrika lokasyonu
-- **area**: Üretim alanı
-- **line**: Üretim hattı
-- **device**: Cihaz veya ekipman
-- **datatype**: Veri tipi (data, event, command)
-- **tagname**: Değişken adı
+- **enterprise**: Enterprise name
+- **site**: Plant/Factory location
+- **area**: Production area
+- **line**: Production line
+- **device**: Device or equipment
+- **datatype**: Data type (data, event, command)
+- **tagname**: Variable name
 
-## Kaynaklar
+## Resources
 
-- [ISA-95 Resmi Sitesi](https://www.isa.org/standards-and-publications/isa-standards/isa-standards-committees/isa95)
+- [ISA-95 Official Website](https://www.isa.org/standards-and-publications/isa-standards/isa-standards-committees/isa95)
 - [ANSI/ISA-95.00.01-2010](https://www.isa.org/products/ansi-isa-95-00-01-2010-enterprise-control-system-in) 

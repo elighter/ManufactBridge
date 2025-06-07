@@ -1,15 +1,15 @@
-# ManufactBridge Edge Connector Modülü
+# ManufactBridge Edge Connector Module
 
-Edge Connector modülü, ManufactBridge platformunun farklı endüstriyel sistemlerden (SCADA, PLC, DCS, IoT cihazları, vb.) veri toplama katmanıdır. Bu modül, çeşitli endüstriyel protokollerle iletişim kurarak verileri standartlaştırılmış bir formatta Unified Namespace (UNS) üzerinden erişilebilir hale getirir.
+The Edge Connector module is the data collection layer of the ManufactBridge platform for various industrial systems (SCADA, PLC, DCS, IoT devices, etc.). This module communicates with various industrial protocols and makes data accessible through the Unified Namespace (UNS) in a standardized format.
 
-## Mimari
+## Architecture
 
-Edge Connector modülü aşağıdaki bileşenlerden oluşur:
+The Edge Connector module consists of the following components:
 
-- **BaseAdapter**: Tüm protokol adaptörleri için temel sınıf
-- **ConnectorManager**: Birden çok konnektörün yaşam döngüsünü yöneten ana sınıf
-- **ConfigManager**: Konnektör yapılandırmalarını yöneten sınıf
-- **Protokol Adaptörleri**: Farklı endüstriyel protokoller için özel adaptörler (Modbus, OPC UA, S7, MQTT vb.)
+- **BaseAdapter**: Base class for all protocol adapters
+- **ConnectorManager**: Main class that manages the lifecycle of multiple connectors
+- **ConfigManager**: Class that manages connector configurations
+- **Protocol Adapters**: Specialized adapters for different industrial protocols (Modbus, OPC UA, S7, MQTT, etc.)
 
 ```
    +------------------+      +-------------------+      +------------------+
@@ -31,32 +31,32 @@ Edge Connector modülü aşağıdaki bileşenlerden oluşur:
            +-----------------+                     +----------------+
 ```
 
-## Desteklenen Protokoller
+## Supported Protocols
 
-Edge Connector modülü, aşağıdaki endüstriyel protokolleri desteklemektedir (ya da destek planlanan protokollerdir):
+The Edge Connector module supports the following industrial protocols (or protocols planned for support):
 
-- **Modbus TCP/RTU**: PLC'ler ve diğer endüstriyel cihazlar için yaygın protokol
-- **OPC UA**: Modern endüstriyel sistemler için güvenli ve ölçeklenebilir iletişim protokolü
-- **Siemens S7**: Siemens S7 serisi PLC'ler için özel protokol
-- **MQTT**: IoT uygulamaları için hafif mesajlaşma protokolü
-- **MTConnect**: CNC makineleri ve diğer üretim ekipmanları için veri toplama standardı
-- **EtherNet/IP**: Allen-Bradley ve Rockwell Automation cihazları için protokol
-- **Profinet**: Siemens ve diğer Avrupa merkezli endüstriyel cihazlar için protokol
-- **BACnet**: Bina otomasyon sistemleri için protokol
-- **REST API**: Web tabanlı sistemlerle entegrasyon
+- **Modbus TCP/RTU**: Common protocol for PLCs and other industrial devices
+- **OPC UA**: Secure and scalable communication protocol for modern industrial systems
+- **Siemens S7**: Specialized protocol for Siemens S7 series PLCs
+- **MQTT**: Lightweight messaging protocol for IoT applications
+- **MTConnect**: Data collection standard for CNC machines and other manufacturing equipment
+- **EtherNet/IP**: Protocol for Allen-Bradley and Rockwell Automation devices
+- **Profinet**: Protocol for Siemens and other European-centered industrial devices
+- **BACnet**: Protocol for building automation systems
+- **REST API**: Integration with web-based systems
 
-## Kurulum ve Kullanım
+## Installation and Usage
 
-### Konnektör Yapılandırması
+### Connector Configuration
 
-Konnektörler YAML dosyaları aracılığıyla yapılandırılır. Örnek bir Modbus TCP konnektör yapılandırması:
+Connectors are configured through YAML files. Example Modbus TCP connector configuration:
 
 ```yaml
 connector:
   id: "plc-line1"
   type: "plc"
   protocol: "modbus-tcp"
-  description: "Hat 1 PLC Modbus Konnektörü"
+  description: "Line 1 PLC Modbus Connector"
   
 connection:
   host: "192.168.1.100"
@@ -89,46 +89,46 @@ mapping:
     equipmentType: "filling-machine"
 ```
 
-### Programlama API Kullanımı
+### Programming API Usage
 
-Edge Connector API'sini kullanarak konnektörleri programatik olarak yönetmek için:
+To manage connectors programmatically using the Edge Connector API:
 
 ```javascript
 const { createEdgeConnector } = require('./EdgeConnectors');
 
-// Edge Connector oluştur
+// Create Edge Connector
 const edgeConnector = createEdgeConnector({
   config: {
     configDir: './config',
     connectorsDir: './config/connectors'
   },
   connector: {
-    unsPublisher: unsInstance, // UNS Publisher nesnesi
+    unsPublisher: unsInstance, // UNS Publisher object
     autoReconnect: true,
     reconnectInterval: 5000
   }
 });
 
-// Konfigürasyon dosyasından konnektör yükle
+// Load connector from configuration file
 edgeConnector.loadConnectorFromConfig('plc-line1');
 
-// Konnektörleri başlat
+// Start connectors
 await edgeConnector.startAllConnectors();
 
-// Durum kontrolü
+// Status check
 const status = edgeConnector.getStatus();
-console.log('Konnektör durumu:', status);
+console.log('Connector status:', status);
 
-// Belirli bir süre sonra konnektörleri durdur
+// Stop connectors after a certain time
 setTimeout(async () => {
   await edgeConnector.stopAllConnectors();
-  console.log('Konnektörler durduruldu');
+  console.log('Connectors stopped');
 }, 60000);
 ```
 
-## Protokol Adaptörü Geliştirme
+## Protocol Adapter Development
 
-Yeni bir protokol adaptörü geliştirmek için `BaseAdapter` sınıfından türetme yapılarak gerekli metotlar uygulanmalıdır:
+To develop a new protocol adapter, derive from the `BaseAdapter` class and implement the required methods:
 
 ```javascript
 const BaseAdapter = require('../base-adapter');
@@ -136,45 +136,45 @@ const BaseAdapter = require('../base-adapter');
 class MyCustomAdapter extends BaseAdapter {
   constructor(config) {
     super(config);
-    // Özel başlatma kodu
+    // Custom initialization code
   }
   
   async connect() {
-    // Bağlantı kodu
+    // Connection code
   }
   
   async disconnect() {
-    // Bağlantı kesme kodu
+    // Disconnection code
   }
   
   async readTag(tagName) {
-    // Tag okuma kodu
+    // Tag reading code
   }
   
   async writeTag(tagName, value) {
-    // Tag yazma kodu
+    // Tag writing code
   }
 }
 
 module.exports = MyCustomAdapter;
 ```
 
-## Güvenlik
+## Security
 
-Edge Connector modülü, aşağıdaki güvenlik özelliklerini sunar:
+The Edge Connector module provides the following security features:
 
-- Kimlik doğrulama ve yetkilendirme mekanizmaları
-- İletişim şifreleme (TLS/SSL)
-- Hassas bilgilerin (kullanıcı adı, şifre vb.) güvenli saklama
-- Erişim denetimi ve kayıt tutma
+- Authentication and authorization mechanisms
+- Communication encryption (TLS/SSL)
+- Secure storage of sensitive information (username, password, etc.)
+- Access control and audit logging
 
-## Hata Toleransı ve Dayanıklılık
+## Fault Tolerance and Resilience
 
-- Otomatik yeniden bağlanma
-- Yerel önbellek ile bağlantı kesintilerinde veri kaybını önleme
-- Çoklu bağlantı denemesi ve zaman aşımı yönetimi
-- Durum izleme ve loglama
+- Automatic reconnection
+- Local caching to prevent data loss during connection interruptions
+- Multiple connection attempts and timeout management
+- Status monitoring and logging
 
-## Lisans
+## License
 
-ManufactBridge platformu MIT lisansı altında dağıtılmaktadır. 
+The ManufactBridge platform is distributed under the MIT license. 

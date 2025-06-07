@@ -1,109 +1,109 @@
-# ManufactBridge Kaynak Kodu
+# ManufactBridge Source Code
 
-Bu klasör, ManufactBridge projesinin kaynak kodunu içerir. Aşağıda her bir modülün kısa bir açıklaması bulunmaktadır.
+This folder contains the source code of the ManufactBridge project. Below is a brief description of each module.
 
-## Dokümantasyon Yapısı
+## Documentation Structure
 
-ManufactBridge projesi aşağıdaki dokümantasyon dosyalarını içerir:
+The ManufactBridge project includes the following documentation files:
 
-1. **Ana Proje Bilgileri**: Genel proje tanımı, kurulum talimatları ve temel bilgiler için [ana README.md](/README.md) dosyasına bakabilirsiniz.
+1. **Main Project Information**: For general project description, installation instructions, and basic information, see the [main README.md](/README.md) file.
 
-2. **Kullanıcı ve Entegrasyon Rehberleri**: Detaylı kullanım kılavuzları, API referansları ve entegrasyon rehberleri için [docs/README.md](/docs/README.md) dosyasını inceleyebilirsiniz.
+2. **User and Integration Guides**: For detailed usage guides, API references, and integration guides, please review the [docs/README.md](/docs/README.md) file.
 
-3. **Kaynak Kod Yapısı**: Bu dosya (src/README.md) kaynak kod organizasyonunu ve modüllerin detaylı açıklamalarını içerir.
+3. **Source Code Structure**: This file (src/README.md) contains the source code organization and detailed descriptions of modules.
 
-4. **Katkı Sağlama Rehberi**: Projeye nasıl katkıda bulunulacağı hakkında bilgi için [CONTRIBUTING.md](/CONTRIBUTING.md) dosyasına başvurabilirsiniz.
+4. **Contributing Guide**: For information on how to contribute to the project, please refer to the [CONTRIBUTING.md](/CONTRIBUTING.md) file.
 
-## Modüller
+## Modules
 
 ### EdgeConnectors
 
-Endüstriyel sistemler ve diğer veri kaynaklarından veri toplama bileşenleri:
+Data collection components from industrial systems and other data sources:
 
-- **SCADA**: SCADA sistemleri için veri adaptörleri (OPC UA, OPC DA, Modbus)
-- **Historian**: Historian sistemleri için veri adaptörleri (OSIsoft PI, Wonderware, AspenTech IP.21)
-- **DCS**: Dağıtık kontrol sistemleri için veri adaptörleri (ABB, Siemens, Honeywell, Yokogawa)
-- **Analyzers**: Üretim analizörleri için veri adaptörleri (Quality, Spectrometer, Chromatograph)
-- **ERP**: ERP sistemleri için veri adaptörleri (SAP, Oracle, Microsoft Dynamics)
+- **SCADA**: Data adapters for SCADA systems (OPC UA, OPC DA, Modbus)
+- **Historian**: Data adapters for Historian systems (OSIsoft PI, Wonderware, AspenTech IP.21)
+- **DCS**: Data adapters for distributed control systems (ABB, Siemens, Honeywell, Yokogawa)
+- **Analyzers**: Data adapters for production analyzers (Quality, Spectrometer, Chromatograph)
+- **ERP**: Data adapters for ERP systems (SAP, Oracle, Microsoft Dynamics)
 
 ### UnifiedNamespace
 
-Veri akışının merkezi mesajlaşma katmanı:
+Central messaging layer for data flow:
 
-- **broker**: MQTT/Kafka mesaj aracı yapılandırmaları
-- **schema**: Veri şema tanımları ve doğrulama bileşenleri
-- **Sparkplug**: Sparkplug B protokolü uyarlama bileşenleri
-- **ISA95**: ISA-95 standardında hiyerarşik yapı bileşenleri
+- **broker**: MQTT/Kafka message broker configurations
+- **schema**: Data schema definitions and validation components
+- **Sparkplug**: Sparkplug B protocol adaptation components
+- **ISA95**: Hierarchical structure components in ISA-95 standard
 
 ### DataPlatform
 
-Verilerin depolanması ve işlenmesi için temel platform:
+Base platform for data storage and processing:
 
-- **DataLake**: Yapılandırılmamış veri depolama (MinIO, S3 uyumlu)
-- **TimeSeriesDB**: Zaman serisi veritabanı entegrasyonu (InfluxDB, TimescaleDB)
-- **StreamProcessing**: Gerçek zamanlı veri işleme (Kafka Streams)
-- **BatchProcessing**: Toplu veri işleme bileşenleri (Apache Spark)
+- **DataLake**: Unstructured data storage (MinIO, S3 compatible)
+- **TimeSeriesDB**: Time series database integration (InfluxDB, TimescaleDB)
+- **StreamProcessing**: Real-time data processing (Kafka Streams)
+- **BatchProcessing**: Batch data processing components (Apache Spark)
 
 ### Analytics
 
-Veri analitiği ve makine öğrenmesi bileşenleri:
+Data analytics and machine learning components:
 
-- **ML**: Makine öğrenmesi modelleri ve algoritmaları
-- **AI**: Yapay zeka ve ileri analitik bileşenleri
-- **PredictiveMaintenance**: Kestirimci bakım modülleri
-- **Visualization**: Veri görselleştirme araçları ve dashboard'lar
+- **ML**: Machine learning models and algorithms
+- **AI**: Artificial intelligence and advanced analytics components
+- **PredictiveMaintenance**: Predictive maintenance modules
+- **Visualization**: Data visualization tools and dashboards
 
 ### IntegrationLayer
 
-Diğer sistemlerle entegrasyon bileşenleri:
+Integration components with other systems:
 
-- **ERPConnectors**: Farklı ERP sistemleri için bağlantı noktaları
-  - **SAP**: SAP sistemlerine bağlantı bileşenleri
-  - **OpenSource**: Açık kaynak ERP sistemlerine bağlantı bileşenleri
-  - **Legacy**: Eski ERP sistemlerine bağlantı bileşenleri
-- **API**: REST ve GraphQL API bileşenleri
-- **MessageBrokers**: Mesaj aracıları entegrasyonu
-- **DataTransformation**: Veri dönüşüm servisleri
-- **Orchestration**: İş akışı ve orkestrasyon bileşenleri
-- **ErrorHandling**: Hata yönetimi ve telafi mekanizmaları
+- **ERPConnectors**: Connection points for different ERP systems
+  - **SAP**: Connection components for SAP systems
+  - **OpenSource**: Connection components for open source ERP systems
+  - **Legacy**: Connection components for legacy ERP systems
+- **API**: REST and GraphQL API components
+- **MessageBrokers**: Message broker integration
+- **DataTransformation**: Data transformation services
+- **Orchestration**: Workflow and orchestration components
+- **ErrorHandling**: Error management and compensation mechanisms
 
 ### SecurityLayer
 
-Güvenlik ve yetkilendirme bileşenleri:
+Security and authorization components:
 
-- **Authentication**: Kimlik doğrulama servisleri
-- **Authorization**: Yetkilendirme ve erişim kontrolü
-- **Encryption**: Veri şifreleme servisleri
-- **Audit**: Denetim ve log izleme
-- **ThreatDetection**: Güvenlik tehdidi tespit bileşenleri
+- **Authentication**: Authentication services
+- **Authorization**: Authorization and access control
+- **Encryption**: Data encryption services
+- **Audit**: Audit and log monitoring
+- **ThreatDetection**: Security threat detection components
 
 ### ResilienceLayer
 
-Dayanıklılık ve hata toleransı bileşenleri:
+Resilience and fault tolerance components:
 
-- **CircuitBreakers**: Devre kesici bileşenler
-- **Retry**: Yeniden deneme stratejileri
-- **Fallback**: Alternatif işlem mekanizmaları
-- **Monitoring**: Hata izleme bileşenleri
-- **Recovery**: Veri ve sistem kurtarma bileşenleri
+- **CircuitBreakers**: Circuit breaker components
+- **Retry**: Retry strategies
+- **Fallback**: Alternative operation mechanisms
+- **Monitoring**: Error monitoring components
+- **Recovery**: Data and system recovery components
 
 ### ManagementLayer
 
-Sistem yönetimi ve izleme bileşenleri:
+System management and monitoring components:
 
-- **SystemManagement**: Sistem yönetimi araçları
-- **PerformanceMonitoring**: Performans izleme bileşenleri
-- **Alerting**: Uyarı ve bildirim bileşenleri
-- **Dashboards**: Yönetim panoları
+- **SystemManagement**: System management tools
+- **PerformanceMonitoring**: Performance monitoring components
+- **Alerting**: Alert and notification components
+- **Dashboards**: Management dashboards
 
-## Geliştirmeye Başlarken
+## Getting Started with Development
 
-Modül geliştirirken aşağıdaki standartları takip edin:
+When developing modules, follow these standards:
 
-1. Her modül kendi içinde bağımsız olmalıdır
-2. Modül arayüzleri açıkça tanımlanmalıdır
-3. Birim testleri yazılmalıdır
-4. Dokümantasyon eklenmelidir
-5. Kodlama standartlarına uyulmalıdır
+1. Each module should be independent within itself
+2. Module interfaces should be clearly defined
+3. Unit tests should be written
+4. Documentation should be added
+5. Coding standards should be followed
 
-Geliştirme için daha fazla bilgi: [CONTRIBUTING.md](/CONTRIBUTING.md) 
+For more information on development: [CONTRIBUTING.md](/CONTRIBUTING.md) 

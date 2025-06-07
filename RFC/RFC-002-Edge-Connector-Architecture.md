@@ -1,29 +1,29 @@
-# RFC-002: Edge Connector Mimarisi ve Protokol Dönüşümü
+# RFC-002: Edge Connector Architecture and Protocol Transformation
 
-## Özet
+## Summary
 
-Bu RFC, ManufactBridge platformunun endüstriyel sistemlerden (SCADA, PLC, IoT sensörleri vb.) veri toplama için kullanılacak Edge Connector mimarisini tanımlar. Edge Connector'lar, farklı protokolleri UNS'ye (Unified Namespace) entegre ederek endüstriyel verilerin toplanmasını, filtrelenmesini, dönüştürülmesini ve standartlaştırılmasını sağlar.
+This RFC defines the Edge Connector architecture that will be used by the ManufactBridge platform for data collection from industrial systems (SCADA, PLC, IoT sensors, etc.). Edge Connectors enable the collection, filtering, transformation, and standardization of industrial data by integrating different protocols into the UNS (Unified Namespace).
 
-## Motivasyon
+## Motivation
 
-Endüstriyel ortamlarda çok sayıda farklı protokol, cihaz, makine ve sistem bulunmaktadır. Her birinin veri formatı, protokolü ve iletişim yöntemi farklıdır. Bu karmaşık ortamda veri toplamayı basitleştirmek, standartlaştırmak ve ölçeklenebilir hale getirmek için esnek ve güçlü bir Edge Connector mimarisi gereklidir.
+Industrial environments contain numerous different protocols, devices, machines, and systems. Each has different data formats, protocols, and communication methods. To simplify, standardize, and make data collection scalable in this complex environment, a flexible and powerful Edge Connector architecture is required.
 
-## Tasarım Detayları
+## Design Details
 
-### 1. Edge Connector Çerçevesi
+### 1. Edge Connector Framework
 
-Edge Connector mimarisi, aşağıdaki temel bileşenlerden oluşacaktır:
+The Edge Connector architecture will consist of the following core components:
 
-1. **Protokol Adaptörleri**: Endüstriyel protokolleri (Modbus, OPC UA, Profinet, EtherNet/IP, MQTT, vb.) destekleyen modüler adaptörler
-2. **Veri Ön İşleme Motoru**: Ham verileri filtreleme, örneklendirme, ölçekleme ve doğrulama
-3. **Edge Önbellek**: Bağlantı kesintilerinde veri kaybını önlemek için yerel depolama
-4. **Mesaj Formatlayıcı**: Verileri UNS şema formatına uygun hale getirme
-5. **Bağlantı Yöneticisi**: Kesintilere karşı yeniden bağlanma, otomatik yapılandırma
-6. **Edge Analitik**: Kaynak noktasında basit analitik ve hesaplamalar
+1. **Protocol Adapters**: Modular adapters supporting industrial protocols (Modbus, OPC UA, Profinet, EtherNet/IP, MQTT, etc.)
+2. **Data Pre-processing Engine**: Filtering, sampling, scaling, and validation of raw data
+3. **Edge Cache**: Local storage to prevent data loss during connection outages
+4. **Message Formatter**: Making data compliant with UNS schema format
+5. **Connection Manager**: Reconnection against outages, automatic configuration
+6. **Edge Analytics**: Simple analytics and calculations at the source point
 
-### 2. Desteklenen Protokoller
+### 2. Supported Protocols
 
-İlk aşamada aşağıdaki protokoller desteklenecektir:
+The following protocols will be supported in the first phase:
 
 - **OPC UA** (Unified Architecture)
 - **Modbus TCP/RTU**
@@ -33,60 +33,60 @@ Edge Connector mimarisi, aşağıdaki temel bileşenlerden oluşacaktır:
 - **Siemens S7**
 - **MTConnect**
 - **REST API**
-- **JDBC/ODBC** (Veritabanı bağlantıları)
+- **JDBC/ODBC** (Database connections)
 
-### 3. Edge Connector Mimarisi
+### 3. Edge Connector Architecture
 
-Edge Connector'lar, aşağıdaki katmanlı mimariyi kullanacaktır:
+Edge Connectors will use the following layered architecture:
 
 ```
                     +---------------------------+
                     |                           |
-                    |    Veri Ön İşleme         |
-                    |    Filtreler, Şema Doğ.   |
+                    |    Data Pre-processing    |
+                    |    Filters, Schema Val.   |
                     |                           |
                     +------------+--------------+
                                  |
 +-------------------+  +---------v----------+  +-------------------+
 |                   |  |                    |  |                   |
-|  Protokol         |  |  Mesaj Dönüşüm     |  |  Bağlantı         |
-|  Adaptörleri      +-->  ve Formatlama     +-->  Yönetimi         |
+|  Protocol         |  |  Message Transform |  |  Connection       |
+|  Adapters         +-->  and Formatting    +-->  Management       |
 |                   |  |                    |  |                   |
 +-------------------+  +--------------------+  +--------+----------+
                                                         |
                                                         v
                                                +------------------+
                                                |                  |
-                                               |  UNS Bağlantısı  |
+                                               |  UNS Connection  |
                                                |  (MQTT/Kafka)    |
                                                |                  |
                                                +------------------+
 ```
 
-### 4. Ölçeklenebilir Dağıtım Modeli
+### 4. Scalable Deployment Model
 
-Edge Connector'ların farklı dağıtım senaryolarını desteklemesi gerekir:
+Edge Connectors need to support different deployment scenarios:
 
-- **Docker Container**: Tek bir makine veya gateway üzerinde çalışma
-- **Kubernetes Pod**: Büyük ölçekli endüstriyel ortamlarda Kubernetes kümesinde çalışma
-- **Gömülü Cihazlar**: Raspberry Pi gibi düşük güçlü cihazlarda çalışma
-- **VM Bazlı**: Geleneksel hiper-visor ortamlarında çalışma
+- **Docker Container**: Running on a single machine or gateway
+- **Kubernetes Pod**: Running in Kubernetes clusters in large-scale industrial environments
+- **Embedded Devices**: Running on low-power devices like Raspberry Pi
+- **VM-Based**: Running in traditional hypervisor environments
 
-### 5. Veri Toplama Modları
+### 5. Data Collection Modes
 
-Edge Connector'lar, aşağıdaki veri toplama yöntemlerini desteklemelidir:
+Edge Connectors should support the following data collection methods:
 
-- **Periyodik Toplama**: Belirli aralıklarla veri toplama (polling)
-- **Değişiklik Tabanlı**: Sadece değer değiştiğinde veri toplama (change-based)
-- **Olay Tabanlı**: Belirli olaylar gerçekleştiğinde veri toplama (event-based)
-- **Akış Tabanlı**: Sürekli veri akışı (streaming)
+- **Periodic Collection**: Data collection at specific intervals (polling)
+- **Change-Based**: Data collection only when values change (change-based)
+- **Event-Based**: Data collection when specific events occur (event-based)
+- **Stream-Based**: Continuous data flow (streaming)
 
-### 6. Yapılandırma ve Yönetim
+### 6. Configuration and Management
 
-Edge Connector'lar için kolay yapılandırma sağlanmalıdır:
+Easy configuration should be provided for Edge Connectors:
 
 ```yaml
-# edge-connector-config.yaml örneği
+# edge-connector-config.yaml example
 connector:
   id: "plc-line1"
   type: "plc"
@@ -122,29 +122,29 @@ mapping:
     equipmentType: "filling-machine"
 ```
 
-## Uygulama Adımları
+## Implementation Steps
 
-1. Temel Edge Connector çerçevesinin geliştirilmesi
-2. İlk protokol adaptörlerinin implementasyonu (OPC UA, Modbus TCP)
-3. Veri ön işleme ve mesaj formatlama modüllerinin geliştirilmesi
-4. UNS bağlantısı ve mesaj yayınlama sisteminin entegrasyonu
-5. Yapılandırma ve yönetim arayüzünün geliştirilmesi
-6. Edge Connector'ların container imajlarının hazırlanması
-7. Entegrasyon testleri ve performans optimizasyonu
+1. Development of basic Edge Connector framework
+2. Implementation of initial protocol adapters (OPC UA, Modbus TCP)
+3. Development of data pre-processing and message formatting modules
+4. Integration of UNS connection and message publishing system
+5. Development of configuration and management interface
+6. Preparation of Edge Connector container images
+7. Integration testing and performance optimization
 
-## Alternatifler
+## Alternatives
 
-Aşağıdaki alternatifler değerlendirildi:
+The following alternatives were evaluated:
 
-1. **Mevcut açık kaynak konnektörlerin kullanımı**: Protokol çeşitliliği ve özelleştirme esnekliği açısından yetersiz
-2. **Merkezi veri toplama**: Edge özelliklerinin eksikliği ve yüksek bant genişliği gereksinimleri
-3. **COTS ürünleri**: Açık kaynak hedeflerimiz ve topluluk işbirliği modeli ile uyumsuz
+1. **Using existing open source connectors**: Insufficient in terms of protocol diversity and customization flexibility
+2. **Centralized data collection**: Lack of edge features and high bandwidth requirements
+3. **COTS products**: Incompatible with our open source goals and community collaboration model
 
-## Sonuç
+## Conclusion
 
-Edge Connector mimarisi, ManufactBridge platformunun endüstriyel verileri toplamak için kullanacağı temel altyapıyı oluşturacaktır. Modüler, ölçeklenebilir ve esnek tasarımı sayesinde, geniş bir yelpazedeki endüstriyel sistemlerden veri toplanabilecek ve bu veriler standartlaştırılmış bir formatta UNS'ye aktarılabilecektir.
+The Edge Connector architecture will form the basic infrastructure that the ManufactBridge platform will use to collect industrial data. Thanks to its modular, scalable, and flexible design, data can be collected from a wide range of industrial systems and transferred to the UNS in a standardized format.
 
-## Referanslar
+## References
 
 1. OPC UA Specification
 2. Modbus TCP/IP Reference Guide

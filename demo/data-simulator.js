@@ -1,6 +1,6 @@
 /**
- * @fileoverview ManufactBridge Demo - Veri Simülatörü
- * Bu script, demo için gerçekçi üretim verilerini simüle eder.
+ * @fileoverview ManufactBridge Demo - Data Simulator
+ * This script simulates realistic production data for demo purposes.
  */
 
 const mqtt = require('mqtt');
@@ -10,7 +10,7 @@ class DataSimulator {
   constructor(config = {}) {
     this.config = {
       mqttBroker: config.mqttBroker || 'mqtt://localhost:1883',
-      interval: config.interval || 2000, // 2 saniye
+      interval: config.interval || 2000, // 2 seconds
       ...config
     };
     
@@ -18,7 +18,7 @@ class DataSimulator {
     this.running = false;
     this.timers = [];
     
-    // Simülasyon verileri
+    // Simulation data
     this.sensors = {
       temperature: { value: 45, min: 20, max: 80, variance: 2 },
       pressure: { value: 2.5, min: 1.0, max: 5.0, variance: 0.2 },
@@ -28,8 +28,8 @@ class DataSimulator {
     
     this.production = {
       count: 0,
-      rate: 10, // dakikada 10 parça
-      quality: 0.95 // %95 kalite
+      rate: 10, // 10 parts per minute
+      quality: 0.95 // 95% quality
     };
     
     this.alerts = [
@@ -41,94 +41,94 @@ class DataSimulator {
   }
   
   /**
-   * Simülatörü başlatır
+   * Starts the simulator
    */
   async start() {
     try {
-      console.log('🎬 Demo Veri Simülatörü başlatılıyor...');
+      console.log('🎬 Starting Demo Data Simulator...');
       
-      // MQTT bağlantısı
+      // MQTT connection
       this.client = mqtt.connect(this.config.mqttBroker);
       
       this.client.on('connect', () => {
-        console.log('✅ MQTT broker\'a bağlanıldı');
+        console.log('✅ Connected to MQTT broker');
         this._startSimulation();
       });
       
       this.client.on('error', (error) => {
-        console.error('❌ MQTT bağlantı hatası:', error.message);
+        console.error('❌ MQTT connection error:', error.message);
       });
       
       this.running = true;
       
     } catch (error) {
-      console.error('❌ Simülatör başlatma hatası:', error.message);
+      console.error('❌ Simulator startup error:', error.message);
       throw error;
     }
   }
   
   /**
-   * Simülatörü durdurur
+   * Stops the simulator
    */
   async stop() {
-    console.log('🛑 Demo Veri Simülatörü durduruluyor...');
+    console.log('🛑 Stopping Demo Data Simulator...');
     
     this.running = false;
     
-    // Timer'ları temizle
+    // Clear timers
     this.timers.forEach(timer => clearInterval(timer));
     this.timers = [];
     
-    // MQTT bağlantısını kapat
+    // Close MQTT connection
     if (this.client) {
       this.client.end();
     }
     
-    console.log('✅ Simülatör durduruldu');
+    console.log('✅ Simulator stopped');
   }
   
   /**
-   * Simülasyonu başlatır
+   * Starts the simulation
    * @private
    */
   _startSimulation() {
-    console.log('🚀 Veri simülasyonu başlatıldı');
+    console.log('🚀 Data simulation started');
     
-    // Sensör verileri simülasyonu
+    // Sensor data simulation
     const sensorTimer = setInterval(() => {
       this._simulateSensorData();
     }, this.config.interval);
     this.timers.push(sensorTimer);
     
-    // Üretim verileri simülasyonu
+    // Production data simulation
     const productionTimer = setInterval(() => {
       this._simulateProductionData();
-    }, 5000); // 5 saniyede bir
+    }, 5000); // Every 5 seconds
     this.timers.push(productionTimer);
     
     // Alert simülasyonu
     const alertTimer = setInterval(() => {
       this._simulateAlerts();
-    }, 10000); // 10 saniyede bir
+    }, 10000); // Every 10 seconds
     this.timers.push(alertTimer);
     
     // ERP veri simülasyonu
     const erpTimer = setInterval(() => {
       this._simulateERPData();
-    }, 30000); // 30 saniyede bir
+    }, 30000); // Every 30 seconds
     this.timers.push(erpTimer);
   }
   
   /**
-   * Sensör verilerini simüle eder
+   * Simulates sensor data
    * @private
    */
   _simulateSensorData() {
     const timestamp = new Date().toISOString();
     
-    // Her sensör için veri üret
+    // Generate data for each sensor
     Object.entries(this.sensors).forEach(([sensorType, sensor]) => {
-      // Rastgele değişim
+      // Random change
       const change = (Math.random() - 0.5) * 2 * sensor.variance;
       sensor.value = Math.max(sensor.min, Math.min(sensor.max, sensor.value + change));
       
@@ -149,7 +149,7 @@ class DataSimulator {
         }
       };
       
-      // MQTT'ye yayınla
+      // Publish to MQTT
       this.client.publish(unsData.topic, JSON.stringify(unsData.payload));
       
       console.log(`📊 ${sensorType}: ${sensor.value.toFixed(2)} ${this._getUnit(sensorType)}`);
@@ -157,21 +157,21 @@ class DataSimulator {
   }
   
   /**
-   * Üretim verilerini simüle eder
+   * Simulates production data
    * @private
    */
   _simulateProductionData() {
     const timestamp = new Date().toISOString();
     
-    // Üretim sayısını artır
-    const increment = Math.random() < (this.production.rate / 12) ? 1 : 0; // 5 saniyede bir kontrol
+    // Increment production count
+    const increment = Math.random() < (this.production.rate / 12) ? 1 : 0; // Check every 5 seconds
     this.production.count += increment;
     
-    // Kalite kontrolü
+    // Quality control
     const qualityOK = Math.random() < this.production.quality;
     
     if (increment > 0) {
-      // Üretim sayısı
+      // Production count
       const productionData = {
         topic: 'manufactbridge/enterprise1/site1/area1/line1/machine1/data/production_count',
         payload: {
@@ -189,7 +189,7 @@ class DataSimulator {
       
       this.client.publish(productionData.topic, JSON.stringify(productionData.payload));
       
-      // Kalite verisi
+      // Quality data
       const qualityData = {
         topic: 'manufactbridge/enterprise1/site1/area1/line1/machine1/data/quality_status',
         payload: {
@@ -207,12 +207,12 @@ class DataSimulator {
       
       this.client.publish(qualityData.topic, JSON.stringify(qualityData.payload));
       
-      console.log(`🏭 Üretim: ${this.production.count} parça, Kalite: ${qualityOK ? '✅' : '❌'}`);
+      console.log(`🏭 Production: ${this.production.count} parts, Quality: ${qualityOK ? '✅' : '❌'}`);
     }
   }
   
   /**
-   * Alert'leri simüle eder
+   * Simulates alerts
    * @private
    */
   _simulateAlerts() {
@@ -244,17 +244,17 @@ class DataSimulator {
   }
   
   /**
-   * ERP verilerini simüle eder
+   * Simulates ERP data
    * @private
    */
   _simulateERPData() {
     const timestamp = new Date().toISOString();
     
-    // Sipariş durumu
+    // Order status
     const orderData = {
       topic: 'manufactbridge/erp/sap_production/data/work_order_status',
       payload: {
-        value: Math.floor(Math.random() * 5) + 1, // 1-5 arası sipariş durumu
+        value: Math.floor(Math.random() * 5) + 1, // Order status between 1-5
         timestamp: timestamp,
         quality: 'good',
         metadata: {
@@ -270,11 +270,11 @@ class DataSimulator {
     
     this.client.publish(orderData.topic, JSON.stringify(orderData.payload));
     
-    // Malzeme durumu
+    // Material status
     const materialData = {
       topic: 'manufactbridge/erp/sap_production/data/material_status',
       payload: {
-        value: Math.floor(Math.random() * 100) + 50, // 50-150 arası stok
+        value: Math.floor(Math.random() * 100) + 50, // Stock between 50-150
         timestamp: timestamp,
         quality: 'good',
         metadata: {
@@ -289,13 +289,13 @@ class DataSimulator {
     
     this.client.publish(materialData.topic, JSON.stringify(materialData.payload));
     
-    console.log(`💼 ERP: Sipariş durumu güncellendi, Malzeme stoku: ${materialData.payload.value} kg`);
+    console.log(`💼 ERP: Order status updated, Material stock: ${materialData.payload.value} kg`);
   }
   
   /**
-   * Sensör tipine göre birim döndürür
-   * @param {string} sensorType - Sensör tipi
-   * @returns {string} Birim
+   * Returns unit based on sensor type
+   * @param {string} sensorType - Sensor type
+   * @returns {string} Unit
    * @private
    */
   _getUnit(sensorType) {
@@ -309,8 +309,8 @@ class DataSimulator {
   }
   
   /**
-   * Mevcut vardiyayı döndürür
-   * @returns {string} Vardiya
+   * Returns current shift
+   * @returns {string} Shift
    * @private
    */
   _getCurrentShift() {
@@ -321,9 +321,9 @@ class DataSimulator {
   }
   
   /**
-   * Alert şiddetini döndürür
-   * @param {string} alertType - Alert tipi
-   * @returns {string} Şiddet
+   * Returns alert severity
+   * @param {string} alertType - Alert type
+   * @returns {string} Severity
    * @private
    */
   _getAlertSeverity(alertType) {
@@ -337,42 +337,42 @@ class DataSimulator {
   }
   
   /**
-   * Alert açıklamasını döndürür
-   * @param {string} alertType - Alert tipi
-   * @returns {string} Açıklama
+   * Returns alert description
+   * @param {string} alertType - Alert type
+   * @returns {string} Description
    * @private
    */
   _getAlertDescription(alertType) {
     const descriptions = {
-      temperature_high: 'Sıcaklık normal değerlerin üzerinde',
-      pressure_low: 'Basınç kritik seviyenin altında',
-      vibration_high: 'Titreşim değerleri yüksek',
-      quality_issue: 'Kalite kontrolünde sorun tespit edildi'
+      temperature_high: 'Temperature above normal values',
+      pressure_low: 'Pressure below critical level',
+      vibration_high: 'High vibration values',
+      quality_issue: 'Issue detected in quality control'
     };
-    return descriptions[alertType] || 'Bilinmeyen alert';
+    return descriptions[alertType] || 'Unknown alert';
   }
 }
 
-// Eğer bu dosya doğrudan çalıştırılıyorsa
+// If this file is run directly
 if (require.main === module) {
   const simulator = new DataSimulator();
   
   // Graceful shutdown
   process.on('SIGINT', async () => {
-    console.log('\n🛑 Simülatör durduruluyor...');
+    console.log('\n🛑 Stopping simulator...');
     await simulator.stop();
     process.exit(0);
   });
   
   process.on('SIGTERM', async () => {
-    console.log('\n🛑 Simülatör durduruluyor...');
+    console.log('\n🛑 Stopping simulator...');
     await simulator.stop();
     process.exit(0);
   });
   
-  // Simülatörü başlat
+  // Start simulator
   simulator.start().catch((error) => {
-    console.error('❌ Simülatör başlatma hatası:', error);
+    console.error('❌ Simulator startup error:', error);
     process.exit(1);
   });
 }

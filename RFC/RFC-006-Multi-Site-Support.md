@@ -1,29 +1,29 @@
-# RFC-006: Çoklu Saha Desteği ve Federasyon
+# RFC-006: Multi-Site Support and Federation
 
-## Özet
+## Summary
 
-Bu RFC, ManufactBridge platformunun birden fazla üretim tesisi, saha veya fabrikanın eş zamanlı olarak yönetilmesini sağlayan Çoklu Saha Desteği ve Federasyon mimarisini tanımlar. Bu mimari, farklı coğrafi konumlardaki sistemlerin merkezi olarak izlenmesini, yönetilmesini ve aynı zamanda yerel özerkliklerini korumasını mümkün kılacaktır.
+This RFC defines the Multi-Site Support and Federation architecture that enables the ManufactBridge platform to simultaneously manage multiple production facilities, sites, or factories. This architecture will enable central monitoring and management of systems in different geographical locations while preserving their local autonomy.
 
-## Motivasyon
+## Motivation
 
-Günümüzde çoğu üretim şirketi, birden fazla tesiste veya farklı coğrafi konumlarda faaliyet göstermektedir. Her ne kadar her tesisteki operasyonlar benzer olsa da, yerel gereksinimler, üretim süreçleri ve altyapı önemli ölçüde farklılık gösterebilir. Bu RFC, hem yerel özerkliği koruyan hem de merkezi izleme, analiz ve yönetim imkanı sunan bir federasyon mimarisi ile bu zorluğu çözmeyi amaçlar.
+Today, most manufacturing companies operate in multiple facilities or different geographical locations. Although operations at each facility may be similar, local requirements, production processes, and infrastructure can vary significantly. This RFC aims to solve this challenge with a federation architecture that both preserves local autonomy and provides centralized monitoring, analysis, and management capabilities.
 
-## Tasarım Detayları
+## Design Details
 
-### 1. Federasyon Mimarisi
+### 1. Federation Architecture
 
-Çoklu Saha Federasyonu aşağıdaki temel bileşenlerden oluşacaktır:
+The Multi-Site Federation will consist of the following core components:
 
-1. **Merkezi Hub**: Tüm sahaların verilerini toplayan, izleyen ve yöneten merkezi sistem
-2. **Saha Düğümleri**: Her üretim tesisinde bulunan, yerel olarak çalışabilen ManufactBridge kurulumları
-3. **Federasyon Katmanı**: Merkezi hub ile sahalar arasındaki senkronizasyon ve iletişimi sağlayan katman
-4. **Saha Yönetim API'si**: Uzaktan saha yönetimi ve yapılandırma için API servisleri
-5. **Federasyon Veri Yönetimi**: Hangi verilerin yerel kalacağı, hangilerinin merkeze gönderileceğini yöneten kurallar
+1. **Central Hub**: Central system that collects, monitors, and manages data from all sites
+2. **Site Nodes**: ManufactBridge installations in each production facility that can operate locally
+3. **Federation Layer**: Layer that provides synchronization and communication between the central hub and sites
+4. **Site Management API**: API services for remote site management and configuration
+5. **Federation Data Management**: Rules that govern which data remains local and which is sent to the center
 
 ```
                         +-------------------+
                         |                   |
-                        |   MERKEZİ HUB     |
+                        |   CENTRAL HUB     |
                         |                   |
                         +----+------+-------+
                              |      |
@@ -31,63 +31,63 @@ Günümüzde çoğu üretim şirketi, birden fazla tesiste veya farklı coğrafi
                     |                        |
            +--------v-------+      +---------v------+
            |                |      |                |
-           |  SAHA-1        |      |  SAHA-2        |
+           |  SITE-1        |      |  SITE-2        |
            |                |      |                |
 +----------+  UNS           |      |  UNS           +----------+
 |          |  Edge          |      |  Edge          |          |
-| Fabrika  |  Data Platform |      |  Data Platform | Fabrika  |
-| Sistemler|  ERP Connector |      |  ERP Connector | Sistemler|
+| Factory  |  Data Platform |      |  Data Platform | Factory  |
+| Systems  |  ERP Connector |      |  ERP Connector | Systems  |
 |          |                |      |                |          |
 +----------+----------------+      +----------------+----------+
 ```
 
-### 2. Federasyon Senkronizasyon Modları
+### 2. Federation Synchronization Modes
 
-Saha düğümleri ile merkezi hub arasında aşağıdaki senkronizasyon modları desteklenecektir:
+The following synchronization modes will be supported between site nodes and the central hub:
 
-1. **Gerçek Zamanlı**: Kritik verilerin anlık olarak merkeze aktarılması
-2. **Periyodik**: Belirli aralıklarla veri senkronizasyonu
-3. **Olay Bazlı**: Yalnızca belirli olaylar veya koşullar gerçekleştiğinde veri gönderimi
-4. **Veri Özeti**: Ham veriler yerine özet verilerin gönderilmesi
-5. **İstek Üzerine**: Merkezi hubdan gelen talep üzerine veri gönderimi
+1. **Real-Time**: Instant transfer of critical data to the center
+2. **Periodic**: Data synchronization at specific intervals
+3. **Event-Based**: Data transmission only when specific events or conditions occur
+4. **Data Summary**: Sending summary data instead of raw data
+5. **On-Demand**: Data transmission upon request from the central hub
 
-### 3. Çevrimdışı Çalışma ve Hata Toleransı
+### 3. Offline Operation and Fault Tolerance
 
-Federasyon mimarisi, internet bağlantısı kesintilerinde bile sahaların çalışmaya devam etmesini sağlayacaktır:
+The federation architecture will ensure that sites continue to operate even during internet connection outages:
 
-1. **Yerel Otonom Çalışma**: Saha düğümleri bağlantı olmasa bile tam işlevsel çalışabilir
-2. **Veri Tamponu**: Bağlantı kesintisi sırasında veriler yerel olarak tamponlanır
-3. **Otomatik Senkronizasyon**: Bağlantı yeniden kurulduğunda veriler otomatik senkronize edilir
-4. **Conflict Resolution**: Çakışan verilerin akıllı şekilde çözümlenmesi
-5. **Öncelikli Senkronizasyon**: Bağlantı kısıtlı olduğunda, en önemli verilerin öncelikli gönderimi
+1. **Local Autonomous Operation**: Site nodes can operate fully functional even without connection
+2. **Data Buffering**: Data is buffered locally during connection outages
+3. **Automatic Synchronization**: Data is automatically synchronized when connection is restored
+4. **Conflict Resolution**: Intelligent resolution of conflicting data
+5. **Priority Synchronization**: Priority transmission of the most important data when connection is limited
 
-### 4. Güvenlik ve Yetkilendirme
+### 4. Security and Authorization
 
-Federasyon mimarisi için çok katmanlı güvenlik modeli:
+Multi-layered security model for federation architecture:
 
-1. **Merkezi Kimlik Yönetimi**: Tüm sahalar için tek kimlik doğrulama ve yetkilendirme
-2. **Rol Bazlı Erişim**: Saha, bölüm ve rol bazlı erişim kontrolü
-3. **Güvenli İletişim**: TLS/mTLS ile şifrelenmiş iletişim
-4. **Veri Güvenliği**: Hassas verilerin şifrelenmesi ve maskelenmesi
-5. **Veri Egemenliği**: Belirli verilerin yerel sınırlar içinde tutulması için kurallar
+1. **Centralized Identity Management**: Single authentication and authorization for all sites
+2. **Role-Based Access**: Site, department, and role-based access control
+3. **Secure Communication**: Encrypted communication with TLS/mTLS
+4. **Data Security**: Encryption and masking of sensitive data
+5. **Data Sovereignty**: Rules for keeping certain data within local boundaries
 
-### 5. Federasyon Veri Modeli
+### 5. Federation Data Model
 
-Federasyon mimarisi, sahaların veri yapılarında belirli bir özerkliğe sahip olmasına izin verirken temel bir veri modeli standartlaştırması sağlayacaktır:
+The federation architecture will provide basic data model standardization while allowing sites to have certain autonomy in their data structures:
 
-1. **Ortak Veri Modeli**: Tüm sahalarda uyumlu temel veri modeli
-2. **Yerel Uzantılar**: Saha spesifik veri modeli uzantıları
-3. **Veri Haritalama**: Yerel veriden merkezi modele dönüşüm
-4. **Şema Evrim Yönetimi**: Veri modeli değişikliklerinin yönetimi
-5. **Metadata Katalog**: Tüm sahalar için merkezi metadata yönetimi
+1. **Common Data Model**: Compatible basic data model across all sites
+2. **Local Extensions**: Site-specific data model extensions
+3. **Data Mapping**: Transformation from local data to central model
+4. **Schema Evolution Management**: Management of data model changes
+5. **Metadata Catalog**: Centralized metadata management for all sites
 
-### 6. Federasyon Yapılandırma Örneği
+### 6. Federation Configuration Example
 
 ```yaml
-# federation-config.yaml örneği
+# federation-config.yaml example
 federation:
   name: "global-manufacturing"
-  description: "Global Üretim Ağı Federasyonu"
+  description: "Global Manufacturing Network Federation"
   
 central_hub:
   url: "https://hub.manufactbridge.com"
@@ -98,7 +98,7 @@ central_hub:
   
 site:
   id: "istanbul-plant"
-  name: "İstanbul Üretim Tesisi"
+  name: "Istanbul Production Facility"
   region: "europe"
   
 synchronization:
@@ -145,30 +145,30 @@ offline_operation:
       - "*.detailed_logs"
 ```
 
-## Uygulama Adımları
+## Implementation Steps
 
-1. Federasyon protokolü ve API'lerin tasarımı ve implementasyonu
-2. Merkezi Hub bileşenlerinin geliştirilmesi
-3. Saha düğümleri için federasyon adaptörlerinin geliştirilmesi
-4. Çevrimdışı çalışma ve veri tamponlama mekanizmalarının implementasyonu
-5. Federasyon veri modelinin ve dönüşüm kurallarının geliştirilmesi
-6. Güvenlik ve yetkilendirme sistemi entegrasyonu
-7. Saha yönetim ve izleme arayüzlerinin geliştirilmesi
-8. Federasyon örnek konfigürasyonlarının hazırlanması
+1. Design and implementation of federation protocol and APIs
+2. Development of Central Hub components
+3. Development of federation adapters for site nodes
+4. Implementation of offline operation and data buffering mechanisms
+5. Development of federation data model and transformation rules
+6. Security and authorization system integration
+7. Development of site management and monitoring interfaces
+8. Preparation of federation example configurations
 
-## Alternatifler
+## Alternatives
 
-Aşağıdaki alternatifler değerlendirildi:
+The following alternatives were evaluated:
 
-1. **Tamamen Merkezi Mimari**: Tüm sahaları tek bir merkezi sistemden yönetme - Yerel özerklik ve hata toleransı eksikliği nedeniyle reddedildi
-2. **Tamamen Bağımsız Sahalar**: Her sahanın bağımsız çalışması - Merkezi izleme ve yönetim eksikliği nedeniyle reddedildi
-3. **Hibrit Bulut Çözümü**: Bulut tabanlı merkezi hub - Bazı endüstriyel ortamlarda bulut bağlantısının olmaması veya güvenlik politikaları nedeniyle reddedildi
+1. **Fully Centralized Architecture**: Managing all sites from a single central system - Rejected due to lack of local autonomy and fault tolerance
+2. **Fully Independent Sites**: Independent operation of each site - Rejected due to lack of centralized monitoring and management
+3. **Hybrid Cloud Solution**: Cloud-based central hub - Rejected due to lack of cloud connectivity or security policies in some industrial environments
 
-## Sonuç
+## Conclusion
 
-Çoklu Saha Desteği ve Federasyon mimarisi, ManufactBridge platformunun gerçek dünya üretim ortamlarındaki karmaşık organizasyonel yapılara uyum sağlamasını mümkün kılacaktır. Bu mimari, hem yerel özerklik ve hata toleransı sağlarken hem de merkezi izleme, yönetim ve analiz imkanları sunacaktır.
+The Multi-Site Support and Federation architecture will enable the ManufactBridge platform to adapt to complex organizational structures in real-world production environments. This architecture will provide both local autonomy and fault tolerance while offering centralized monitoring, management, and analysis capabilities.
 
-## Referanslar
+## References
 
 1. ISA-95 Multi-Site Operations Management Models
 2. Distributed Systems Federation Patterns

@@ -1,19 +1,19 @@
 /**
- * @fileoverview ManufactBridge - OPC UA Protokol Adaptörü
- * Bu adaptör, OPC UA protokolü üzerinden veri toplama işlemlerini gerçekleştirir.
+ * @fileoverview ManufactBridge - OPC UA Protocol Adapter
+ * This adapter performs data collection operations over OPC UA protocol.
  */
 
 const BaseAdapter = require('../base-adapter');
 const { OPCUAClient, MessageSecurityMode, SecurityPolicy, AttributeIds, ClientSubscription, TimestampsToReturn, MonitoringParametersOptions, ReadValueIdOptions, ClientMonitoredItem } = require('node-opcua');
 
 /**
- * OPC UA Node ID Analiz Yardımcısı
- * Örnek: "ns=2;i=1001" -> { namespaceIndex: 2, identifier: 1001, identifierType: 'NUMERIC' }
- * @param {string} nodeId - OPC UA Node ID formatı
- * @returns {Object} Node ID bileşenleri
+ * OPC UA Node ID Analysis Helper
+ * Example: "ns=2;i=1001" -> { namespaceIndex: 2, identifier: 1001, identifierType: 'NUMERIC' }
+ * @param {string} nodeId - OPC UA Node ID format
+ * @returns {Object} Node ID components
  */
 function parseOPCUANodeId(nodeId) {
-  // Node ID formatları:
+  // Node ID formats:
   // ns=<namespaceIndex>;i=<numericId>     (Numeric)
   // ns=<namespaceIndex>;s=<stringId>      (String)
   // ns=<namespaceIndex>;g=<guidId>        (GUID)
@@ -51,8 +51,8 @@ function parseOPCUANodeId(nodeId) {
 
 class OPCUAAdapter extends BaseAdapter {
   /**
-   * OPC UA Adapter constructor'ı
-   * @param {Object} config - OPC UA konnektör konfigürasyonu
+   * OPC UA Adapter constructor
+   * @param {Object} config - OPC UA connector configuration
    */
   constructor(config) {
     super(config);
@@ -66,9 +66,9 @@ class OPCUAAdapter extends BaseAdapter {
     this.connected = false;
     this.reconnecting = false;
     this.reconnectTimer = null;
-    this.lastValues = new Map(); // Deadband için son değerleri sakla
+    this.lastValues = new Map(); // Store last values for deadband
     
-    // OPC UA bağlantı seçenekleri
+    // OPC UA connection options
     this.connectionOptions = {
       applicationName: config.options?.applicationName || 'ManufactBridge OPC UA Client',
       clientName: config.options?.clientName || 'ManufactBridge Client',
@@ -81,15 +81,15 @@ class OPCUAAdapter extends BaseAdapter {
       }
     };
     
-    // Güvenlik ayarları
+    // Security settings
     this.securityMode = this._parseSecurityMode(config.options?.securityMode || 'None');
     this.securityPolicy = this._parseSecurityPolicy(config.options?.securityPolicy || 'None');
   }
   
   /**
-   * Güvenlik modunu parse eder
-   * @param {string} mode - Güvenlik modu string'i
-   * @returns {MessageSecurityMode} OPC UA güvenlik modu
+   * Parses security mode
+   * @param {string} mode - Security mode string
+   * @returns {MessageSecurityMode} OPC UA security mode
    * @private
    */
   _parseSecurityMode(mode) {
@@ -101,15 +101,15 @@ class OPCUAAdapter extends BaseAdapter {
       case 'signandencrypt':
         return MessageSecurityMode.SignAndEncrypt;
       default:
-        this.logger.warn(`Bilinmeyen güvenlik modu: ${mode}, 'None' kullanılıyor`);
+        this.logger.warn(`Unknown security mode: ${mode}, using 'None'`);
         return MessageSecurityMode.None;
     }
   }
   
   /**
-   * Güvenlik politikasını parse eder
-   * @param {string} policy - Güvenlik politikası string'i
-   * @returns {SecurityPolicy} OPC UA güvenlik politikası
+   * Parses security policy
+   * @param {string} policy - Security policy string
+   * @returns {SecurityPolicy} OPC UA security policy
    * @private
    */
   _parseSecurityPolicy(policy) {
@@ -125,37 +125,37 @@ class OPCUAAdapter extends BaseAdapter {
       case 'basic256sha256':
         return SecurityPolicy.Basic256Sha256;
       default:
-        this.logger.warn(`Bilinmeyen güvenlik politikası: ${policy}, 'None' kullanılıyor`);
+        this.logger.warn(`Unknown security policy: ${policy}, using 'None'`);
         return SecurityPolicy.None;
     }
   }
   
   /**
-   * Konfigürasyon doğrulama metodu
-   * @throws {Error} Konfigürasyon geçerli değilse hata fırlatır
+   * Configuration validation method
+   * @throws {Error} Throws error if configuration is invalid
    */
   validateConfig() {
     super.validateConfig();
     
     if (!this.config.connection || !this.config.connection.endpoint) {
-      throw new Error('OPC UA bağlantısı için geçerli bir endpoint gereklidir');
+      throw new Error('A valid endpoint is required for OPC UA connection');
     }
     
-    // Endpoint URL formatını kontrol et
+    // Check endpoint URL format
     const endpoint = this.config.connection.endpoint;
     if (!endpoint.startsWith('opc.tcp://')) {
-      throw new Error('OPC UA endpoint URL\'si opc.tcp:// ile başlamalıdır');
+      throw new Error('OPC UA endpoint URL must start with opc.tcp://');
     }
     
-    // Varsayılan değerleri ayarla
+    // Set default values
     if (!this.config.options) {
       this.config.options = {};
     }
   }
   
   /**
-   * OPC UA sunucusuna bağlanır
-   * @returns {Promise<boolean>} Bağlantı başarılı ise true döner
+   * Connects to OPC UA server
+   * @returns {Promise<boolean>} Returns true if connection is successful
    */
   async connect() {
     if (this.connected) {
@@ -163,34 +163,34 @@ class OPCUAAdapter extends BaseAdapter {
     }
     
     try {
-      this.logger.info(`OPC UA sunucusuna bağlanılıyor: ${this.config.connection.endpoint}`);
+      this.logger.info(`Connecting to OPC UA server: ${this.config.connection.endpoint}`);
       
       // OPC UA Client oluştur
       this.client = OPCUAClient.create(this.connectionOptions);
       
-      // Client olaylarını dinle
+      // Listen to client events
       this._setupClientEvents();
       
-      // Sunucuya bağlan
+      // Connect to server
       await this.client.connect(this.config.connection.endpoint);
-      this.logger.info('OPC UA sunucusuna bağlantı kuruldu');
+      this.logger.info('Connected to OPC UA server');
       
-      // Session oluştur
+      // Create session
       const userIdentity = this._createUserIdentity();
       this.session = await this.client.createSession(userIdentity);
-      this.logger.info('OPC UA session oluşturuldu');
+      this.logger.info('OPC UA session created');
       
-      // Session olaylarını dinle
+      // Listen to session events
       this._setupSessionEvents();
       
       this.connected = true;
       this.status = 'connected';
       this.lastError = null;
       
-      // Başarılı bağlantı olayını tetikle
+      // Trigger successful connection event
       this.emit('connect', { timestamp: new Date() });
       
-      // Tag'leri tanımlayıp subscription'ı başlat
+      // Define tags and start subscription
       if (this.config.tags && Array.isArray(this.config.tags)) {
         await this.defineTags(this.config.tags);
         await this._createSubscription();
@@ -202,13 +202,13 @@ class OPCUAAdapter extends BaseAdapter {
       this.status = 'error';
       this.lastError = err.message;
       
-      this.logger.error(`OPC UA bağlantı hatası: ${err.message}`);
+      this.logger.error(`OPC UA connection error: ${err.message}`);
       this.emit('error', {
-        message: `OPC UA bağlantı hatası: ${err.message}`,
+        message: `OPC UA connection error: ${err.message}`,
         details: err
       });
       
-      // Otomatik yeniden bağlanma
+      // Automatic reconnection
       this._scheduleReconnect();
       
       throw err;
@@ -216,8 +216,8 @@ class OPCUAAdapter extends BaseAdapter {
   }
   
   /**
-   * Kullanıcı kimlik bilgilerini oluşturur
-   * @returns {Object} Kullanıcı kimlik bilgileri
+   * Creates user identity credentials
+   * @returns {Object} User identity credentials
    * @private
    */
   _createUserIdentity() {
@@ -245,19 +245,19 @@ class OPCUAAdapter extends BaseAdapter {
   }
   
   /**
-   * Client olaylarını ayarlar
+   * Sets up client events
    * @private
    */
   _setupClientEvents() {
     this.client.on('connection_reestablished', () => {
-      this.logger.info('OPC UA bağlantısı yeniden kuruldu');
+      this.logger.info('OPC UA connection re-established');
       this.connected = true;
       this.status = 'connected';
       this.emit('reconnect', { timestamp: new Date() });
     });
     
     this.client.on('connection_lost', () => {
-      this.logger.warn('OPC UA bağlantısı kesildi');
+      this.logger.warn('OPC UA connection lost');
       this.connected = false;
       this.status = 'disconnected';
       this.emit('disconnect', { timestamp: new Date() });
@@ -265,19 +265,19 @@ class OPCUAAdapter extends BaseAdapter {
     });
     
     this.client.on('close', () => {
-      this.logger.info('OPC UA client kapatıldı');
+      this.logger.info('OPC UA client closed');
       this.connected = false;
       this.status = 'disconnected';
     });
   }
   
   /**
-   * Session olaylarını ayarlar
+   * Sets up session events
    * @private
    */
   _setupSessionEvents() {
     this.session.on('session_closed', (statusCode) => {
-      this.logger.warn(`OPC UA session kapatıldı: ${statusCode}`);
+      this.logger.warn(`OPC UA session closed: ${statusCode}`);
       this.connected = false;
       this.status = 'disconnected';
       this.emit('disconnect', { timestamp: new Date() });
@@ -285,12 +285,12 @@ class OPCUAAdapter extends BaseAdapter {
   }
   
   /**
-   * Subscription oluşturur ve monitored item'ları ekler
+   * Creates subscription and adds monitored items
    * @private
    */
   async _createSubscription() {
     try {
-      // Subscription oluştur
+      // Create subscription
       this.subscription = ClientSubscription.create(this.session, {
         requestedPublishingInterval: this.config.options?.publishingInterval || 1000,
         requestedLifetimeCount: this.config.options?.lifetimeCount || 60,
@@ -300,32 +300,32 @@ class OPCUAAdapter extends BaseAdapter {
         priority: this.config.options?.priority || 10
       });
       
-      this.logger.info('OPC UA subscription oluşturuldu');
+      this.logger.info('OPC UA subscription created');
       
-      // Subscription olaylarını dinle
+      // Listen to subscription events
       this.subscription.on('started', () => {
-        this.logger.info('OPC UA subscription başlatıldı');
+        this.logger.info('OPC UA subscription started');
       });
       
       this.subscription.on('terminated', () => {
-        this.logger.warn('OPC UA subscription sonlandırıldı');
+        this.logger.warn('OPC UA subscription terminated');
       });
       
-      // Her tag için monitored item oluştur
+      // Create monitored item for each tag
       for (const [tagName, tag] of this.tags.entries()) {
         await this._createMonitoredItem(tagName, tag);
       }
       
     } catch (err) {
-      this.logger.error(`Subscription oluşturma hatası: ${err.message}`);
+      this.logger.error(`Subscription creation error: ${err.message}`);
       throw err;
     }
   }
   
   /**
-   * Monitored item oluşturur
-   * @param {string} tagName - Tag adı
-   * @param {Object} tag - Tag konfigürasyonu
+   * Creates monitored item
+   * @param {string} tagName - Tag name
+   * @param {Object} tag - Tag configuration
    * @private
    */
   async _createMonitoredItem(tagName, tag) {
@@ -344,7 +344,7 @@ class OPCUAAdapter extends BaseAdapter {
         queueSize: tag.queueSize || 1
       };
       
-      // Deadband ayarları
+      // Deadband settings
       if (tag.deadband && tag.deadband > 0) {
         monitoringParameters.filter = {
           deadbandType: 1, // Absolute deadband
@@ -359,50 +359,50 @@ class OPCUAAdapter extends BaseAdapter {
         TimestampsToReturn.Both
       );
       
-      // Monitored item olaylarını dinle
+      // Listen to monitored item events
       monitoredItem.on('changed', (dataValue) => {
         this._handleDataChange(tagName, tag, dataValue);
       });
       
       monitoredItem.on('err', (err) => {
-        this.logger.error(`Monitored item hatası (${tagName}): ${err.message}`);
+        this.logger.error(`Monitored item error (${tagName}): ${err.message}`);
       });
       
       this.monitoredItems.set(tagName, monitoredItem);
-      this.logger.debug(`Monitored item oluşturuldu: ${tagName} (${nodeId})`);
+      this.logger.debug(`Monitored item created: ${tagName} (${nodeId})`);
       
     } catch (err) {
-      this.logger.error(`Monitored item oluşturma hatası (${tagName}): ${err.message}`);
+      this.logger.error(`Monitored item creation error (${tagName}): ${err.message}`);
     }
   }
   
   /**
-   * Veri değişikliğini işler
-   * @param {string} tagName - Tag adı
-   * @param {Object} tag - Tag konfigürasyonu
-   * @param {Object} dataValue - OPC UA veri değeri
+   * Handles data change
+   * @param {string} tagName - Tag name
+   * @param {Object} tag - Tag configuration
+   * @param {Object} dataValue - OPC UA data value
    * @private
    */
   _handleDataChange(tagName, tag, dataValue) {
     try {
-      // Veri kalitesini kontrol et
+      // Check data quality
       if (!dataValue.statusCode.isGood()) {
-        this.logger.warn(`Kötü veri kalitesi (${tagName}): ${dataValue.statusCode.toString()}`);
+        this.logger.warn(`Bad data quality (${tagName}): ${dataValue.statusCode.toString()}`);
         return;
       }
       
       let value = dataValue.value.value;
       const timestamp = dataValue.sourceTimestamp || dataValue.serverTimestamp || new Date();
       
-      // Veri tipi dönüşümü
+      // Data type conversion
       value = this._convertDataType(value, tag.dataType);
       
-      // Deadband kontrolü (eğer local deadband varsa)
+      // Deadband control (if local deadband exists)
       if (tag.deadband && this._shouldApplyDeadband(tagName, value, tag.deadband)) {
-        return; // Deadband içinde, veri değişikliği yayınlanmaz
+        return; // Within deadband, data change not published
       }
       
-      // Veri olayını tetikle
+      // Trigger data event
       this.emit('data', {
         name: tagName,
         value: value,
@@ -411,44 +411,44 @@ class OPCUAAdapter extends BaseAdapter {
         tag: tag
       });
       
-      // Son değeri kaydet (deadband için)
+      // Save last value (for deadband)
       this._updateLastValue(tagName, value);
       
     } catch (err) {
-      this.logger.error(`Veri işleme hatası (${tagName}): ${err.message}`);
+      this.logger.error(`Data processing error (${tagName}): ${err.message}`);
     }
   }
   
   /**
-   * OPC UA bağlantısını kapatır
-   * @returns {Promise<boolean>} Kapatma başarılı ise true döner
+   * Closes OPC UA connection
+   * @returns {Promise<boolean>} Returns true if closing is successful
    */
   async disconnect() {
     try {
-      this.logger.info('OPC UA bağlantısı kapatılıyor...');
+      this.logger.info('Closing OPC UA connection...');
       
-      // Yeniden bağlanma timer'ını temizle
+      // Clear reconnection timer
       if (this.reconnectTimer) {
         clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
       }
       
-      // Monitored item'ları temizle
+      // Clear monitored items
       this.monitoredItems.clear();
       
-      // Subscription'ı kapat
+      // Close subscription
       if (this.subscription) {
         await this.subscription.terminate();
         this.subscription = null;
       }
       
-      // Session'ı kapat
+      // Close session
       if (this.session) {
         await this.session.close();
         this.session = null;
       }
       
-      // Client'ı kapat
+      // Close client
       if (this.client) {
         await this.client.disconnect();
         this.client = null;
@@ -457,29 +457,29 @@ class OPCUAAdapter extends BaseAdapter {
       this.connected = false;
       this.status = 'disconnected';
       
-      this.logger.info('OPC UA bağlantısı kapatıldı');
+      this.logger.info('OPC UA connection closed');
       this.emit('disconnect', { timestamp: new Date() });
       
       return true;
     } catch (err) {
-      this.logger.error(`OPC UA bağlantı kapatma hatası: ${err.message}`);
+      this.logger.error(`OPC UA connection closing error: ${err.message}`);
       return false;
     }
   }
   
   /**
-   * Tek bir tag'i okur
-   * @param {string} tagName - Okunacak tag adı
-   * @returns {Promise<*>} Tag değeri
+   * Reads a single tag
+   * @param {string} tagName - Tag name to read
+   * @returns {Promise<*>} Tag value
    */
   async readTag(tagName) {
     if (!this.connected || !this.session) {
-      throw new Error('OPC UA bağlantısı mevcut değil');
+      throw new Error('OPC UA connection not available');
     }
     
     const tag = this.tags.get(tagName);
     if (!tag) {
-      throw new Error(`Tag bulunamadı: ${tagName}`);
+      throw new Error(`Tag not found: ${tagName}`);
     }
     
     try {
@@ -487,7 +487,7 @@ class OPCUAAdapter extends BaseAdapter {
       const dataValue = await this.session.readVariableValue(nodeId);
       
       if (!dataValue.statusCode.isGood()) {
-        throw new Error(`Kötü veri kalitesi: ${dataValue.statusCode.toString()}`);
+        throw new Error(`Bad data quality: ${dataValue.statusCode.toString()}`);
       }
       
       let value = dataValue.value.value;
@@ -495,49 +495,49 @@ class OPCUAAdapter extends BaseAdapter {
       
       return value;
     } catch (err) {
-      this.logger.error(`Tag okuma hatası (${tagName}): ${err.message}`);
+      this.logger.error(`Tag read error (${tagName}): ${err.message}`);
       throw err;
     }
   }
   
   /**
-   * Tek bir tag'e yazar
-   * @param {string} tagName - Yazılacak tag adı
-   * @param {*} value - Yazılacak değer
-   * @returns {Promise<boolean>} Yazma başarılı ise true döner
+   * Writes to a single tag
+   * @param {string} tagName - Tag name to write
+   * @param {*} value - Value to write
+   * @returns {Promise<boolean>} Returns true if writing is successful
    */
   async writeTag(tagName, value) {
     if (!this.connected || !this.session) {
-      throw new Error('OPC UA bağlantısı mevcut değil');
+      throw new Error('OPC UA connection not available');
     }
     
     const tag = this.tags.get(tagName);
     if (!tag) {
-      throw new Error(`Tag bulunamadı: ${tagName}`);
+      throw new Error(`Tag not found: ${tagName}`);
     }
     
     try {
       const nodeId = tag.nodeId || tag.address;
       
-      // Veri tipini dönüştür
+      // Convert data type
       const convertedValue = this._convertDataType(value, tag.dataType);
       
       const statusCode = await this.session.writeSingleNode(nodeId, convertedValue);
       
       if (!statusCode.isGood()) {
-        throw new Error(`Yazma hatası: ${statusCode.toString()}`);
+        throw new Error(`Write error: ${statusCode.toString()}`);
       }
       
-      this.logger.debug(`Tag yazıldı: ${tagName} = ${convertedValue}`);
+      this.logger.debug(`Tag written: ${tagName} = ${convertedValue}`);
       return true;
     } catch (err) {
-      this.logger.error(`Tag yazma hatası (${tagName}): ${err.message}`);
+      this.logger.error(`Tag write error (${tagName}): ${err.message}`);
       throw err;
     }
   }
   
   /**
-   * Yeniden bağlanmayı zamanlar
+   * Schedules reconnection
    * @private
    */
   _scheduleReconnect() {
@@ -551,7 +551,7 @@ class OPCUAAdapter extends BaseAdapter {
       this.reconnectTimer = null;
       
       if (!this.connected) {
-        this.logger.info('OPC UA yeniden bağlanma deneniyor...');
+        this.logger.info('Attempting OPC UA reconnection...');
         this.reconnecting = true;
         
         try {
@@ -559,18 +559,18 @@ class OPCUAAdapter extends BaseAdapter {
           this.reconnecting = false;
         } catch (err) {
           this.reconnecting = false;
-          this.logger.error(`Yeniden bağlanma başarısız: ${err.message}`);
-          this._scheduleReconnect(); // Tekrar dene
+          this.logger.error(`Reconnection failed: ${err.message}`);
+          this._scheduleReconnect(); // Try again
         }
       }
     }, reconnectInterval);
   }
   
   /**
-   * Veri tipi dönüşümü
-   * @param {*} value - Ham değer
-   * @param {string} dataType - Veri tipi
-   * @returns {*} Dönüştürülmüş değer
+   * Data type conversion
+   * @param {*} value - Raw value
+   * @param {string} dataType - Data type
+   * @returns {*} Converted value
    */
   _convertDataType(value, dataType) {
     switch (dataType?.toLowerCase()) {
@@ -592,9 +592,9 @@ class OPCUAAdapter extends BaseAdapter {
   }
 
   /**
-   * Scan rate'i milisaniyeye çevirir
+   * Converts scan rate to milliseconds
    * @param {string|number} scanRate - Scan rate
-   * @returns {number} Milisaniye cinsinden scan rate
+   * @returns {number} Scan rate in milliseconds
    */
   _parseScanRate(scanRate) {
     if (typeof scanRate === 'number') {
@@ -622,15 +622,15 @@ class OPCUAAdapter extends BaseAdapter {
       }
     }
     
-    return 1000; // Varsayılan 1 saniye
+    return 1000; // Default 1 second
   }
 
   /**
-   * Deadband kontrolü yapar
-   * @param {string} tagName - Tag adı
-   * @param {*} value - Yeni değer
-   * @param {number} deadband - Deadband değeri
-   * @returns {boolean} Deadband uygulanmalı mı
+   * Performs deadband control
+   * @param {string} tagName - Tag name
+   * @param {*} value - New value
+   * @param {number} deadband - Deadband value
+   * @returns {boolean} Should deadband be applied
    */
   _shouldApplyDeadband(tagName, value, deadband) {
     if (!this.lastValues.has(tagName)) {
@@ -647,17 +647,17 @@ class OPCUAAdapter extends BaseAdapter {
   }
 
   /**
-   * Son değeri günceller
-   * @param {string} tagName - Tag adı
-   * @param {*} value - Değer
+   * Updates last value
+   * @param {string} tagName - Tag name
+   * @param {*} value - Value
    */
   _updateLastValue(tagName, value) {
     this.lastValues.set(tagName, value);
   }
 
   /**
-   * Adaptör durumunu döndürür
-   * @returns {Object} Adaptör durumu
+   * Returns adapter status
+   * @returns {Object} Adapter status
    */
   getStatus() {
     return {

@@ -1,9 +1,9 @@
 /**
  * ManufactBridge Edge Connector Modülü
  * 
- * Bu modül, ManufactBridge platformunun Edge Connector bileşenlerini dışa aktarır.
- * Endüstriyel sistemlerle iletişim kurmak ve veri aktarmak için gerekli adaptörleri,
- * veri yönetim ve yapılandırma araçlarını sağlar.
+ * This module exports the Edge Connector components of the ManufactBridge platform.
+ * Provides adapters, data management and configuration tools needed to
+ * communicate with industrial systems and transfer data.
  */
 
 const BaseAdapter = require('./base-adapter');
@@ -16,14 +16,14 @@ const ModbusAdapter = require('./SCADA/modbus-adapter');
 const OPCUAAdapter = require('./SCADA/opcua-adapter');
 
 /**
- * Edge Connector modülü ana fonksiyonu
- * Bu fonksiyon, gerekli bileşenleri başlatır ve yapılandırır.
+ * Edge Connector module main function
+ * This function initializes and configures the required components.
  * 
- * @param {Object} options - Başlatma seçenekleri
- * @returns {Object} Edge Connector modülü API'si
+ * @param {Object} options - Startup options
+ * @returns {Object} Edge Connector module API
  */
 function createEdgeConnector(options = {}) {
-  // Konfigürasyon yöneticisini oluştur
+  // Create configuration manager
   const configManager = new ConfigManager({
     configDir: options.configDir,
     connectorsDir: options.connectorsDir
@@ -35,7 +35,7 @@ function createEdgeConnector(options = {}) {
     configManager: configManager
   });
   
-  // Modülün dışa açılan API'si
+  // Module's exposed API
   return {
     connectorManager,
     configManager,
@@ -43,13 +43,13 @@ function createEdgeConnector(options = {}) {
     adapters: {
       ModbusAdapter,
       OPCUAAdapter
-      // Diğer adaptörler eklenebilir
+      // Other adapters can be added
     },
     config
   };
 }
 
-// Modül içeriğini dışa aktar
+// Export module content
 module.exports = {
   createEdgeConnector,
   BaseAdapter,

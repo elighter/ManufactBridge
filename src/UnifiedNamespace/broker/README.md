@@ -1,54 +1,54 @@
-# Unified Namespace Broker Bileşeni
+# Unified Namespace Broker Component
 
-Bu dizin, ManufactBridge Unified Namespace (UNS) platformundaki mesaj broker bileşenlerine ait dosyaları içerir.
+This directory contains files related to message broker components in the ManufactBridge Unified Namespace (UNS) platform.
 
-## Broker Nedir?
+## What is a Broker?
 
-Broker, Unified Namespace mimarisinin merkezi bileşenidir. Yayıncı (Publisher) ve abone (Subscriber) bileşenleri arasında köprü görevi görür. Temel görevleri:
+The broker is the central component of the Unified Namespace architecture. It acts as a bridge between publisher and subscriber components. Its main functions:
 
-- Mesajları yayıncılardan almak
-- Mesajları ilgili abonelere iletmek
-- Konu filtreleme ve yönlendirme
-- Bağlantı yönetimi
-- Mesaj arabelleği (QoS için)
+- Receiving messages from publishers
+- Delivering messages to relevant subscribers
+- Topic filtering and routing
+- Connection management
+- Message buffering (for QoS)
 
-## Desteklenen Broker Tipleri
+## Supported Broker Types
 
-ManufactBridge UNS platformu, iki farklı broker teknolojisini destekler:
+The ManufactBridge UNS platform supports two different broker technologies:
 
 ### 1. MQTT Broker
 
-MQTT (Message Queuing Telemetry Transport), hafif, yayın/abone temelli bir mesajlaşma protokolüdür. Özellikle IoT senaryoları için idealdir.
+MQTT (Message Queuing Telemetry Transport) is a lightweight, publish/subscribe-based messaging protocol. It is especially ideal for IoT scenarios.
 
-**Özellikler:**
-- Düşük bant genişliği kullanımı
-- Güvenilir mesaj aktarımı (QoS seviyeleri)
-- Oturum desteği
-- Topic-based filtreleme
-- TLS/SSL güvenlik desteği
+**Features:**
+- Low bandwidth usage
+- Reliable message delivery (QoS levels)
+- Session support
+- Topic-based filtering
+- TLS/SSL security support
 
 ### 2. Kafka Broker
 
-Apache Kafka, yüksek performanslı, dağıtık bir olay akış platformudur. Büyük veri akışları ve yüksek ölçeklenebilirlik gerektiren senaryolar için uygundur.
+Apache Kafka is a high-performance, distributed event streaming platform. It is suitable for scenarios requiring large data flows and high scalability.
 
-**Özellikler:**
-- Yüksek verim
-- Ölçeklenebilirlik
-- Dayanıklılık
-- Veri saklama
-- Dağıtık mimari
-- Hata toleransı
+**Features:**
+- High throughput
+- Scalability
+- Durability
+- Data retention
+- Distributed architecture
+- Fault tolerance
 
-## Broker Seçimi
+## Broker Selection
 
-Proje gereksinimlerinize göre hangi broker'ı kullanacağınızı seçebilirsiniz:
+You can choose which broker to use based on your project requirements:
 
-- MQTT: Düşük gecikme, sınırlı bant genişliği olan IoT uygulamaları için
-- Kafka: Büyük veri hacmi, veri analitiği ve yüksek verim gerektiren uygulamalar için
+- MQTT: For IoT applications with low latency and limited bandwidth
+- Kafka: For applications requiring large data volumes, data analytics, and high throughput
 
-## Broker Yapılandırması
+## Broker Configuration
 
-Her broker'ın yapılandırması, UNS `config.js` dosyasından yönetilir. Aşağıdaki yapılandırma örneği, hem MQTT hem de Kafka desteğini gösterir:
+Each broker's configuration is managed from the UNS `config.js` file. The following configuration example shows both MQTT and Kafka support:
 
 ```javascript
 module.exports = {
@@ -59,21 +59,21 @@ module.exports = {
       options: {
         clientId: 'manufactbridge-uns',
         clean: true,
-        // Diğer MQTT seçenekleri
+        // Other MQTT options
       }
     },
     kafka: {
       brokers: ['localhost:9092'],
       clientId: 'manufactbridge-uns',
-      // Diğer Kafka seçenekleri
+      // Other Kafka options
     }
   }
 };
 ```
 
-## Kaynaklar
+## Resources
 
-- [MQTT Protokolü](https://mqtt.org/)
+- [MQTT Protocol](https://mqtt.org/)
 - [Eclipse Mosquitto](https://mosquitto.org/)
 - [Apache Kafka](https://kafka.apache.org/)
-- [Kafka Node.js İstemcisi](https://kafka.js.org/) 
+- [Kafka Node.js Client](https://kafka.js.org/) 

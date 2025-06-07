@@ -1,48 +1,48 @@
 # ManufactBridge RFC (Request for Comments)
 
-Bu dizin, ManufactBridge platformunun tasarım ve uygulama detaylarını tanımlayan RFC (Request for Comments) belgelerini içerir. Her RFC, platformun belirli bir bileşeni veya özelliği için mimari kararları, tasarım detaylarını ve uygulama adımlarını tanımlar.
+This directory contains RFC (Request for Comments) documents that define the design and implementation details of the ManufactBridge platform. Each RFC describes architectural decisions, design details, and implementation steps for a specific component or feature of the platform.
 
-## RFC Belgeleri
+## RFC Documents
 
-ManufactBridge RFC belgeleri, uygulama önceliğine göre aşağıdaki sırada listelenmiştir:
+ManufactBridge RFC documents are listed below in order of implementation priority:
 
-| RFC No | Başlık | Açıklama | Durum |
-|--------|--------|----------|-------|
-| [RFC-001](RFC-001-Unified-Namespace-Architecture.md) | Unified Namespace (UNS) Mimarisi | Merkezi veri alanının tasarımı ve mesajlaşma altyapısı | Taslak |
-| [RFC-002](RFC-002-Edge-Connector-Architecture.md) | Edge Connector Mimarisi ve Protokol Dönüşümü | Endüstriyel sistemlerden veri toplama mimarisi | Taslak |
-| [RFC-003](RFC-003-ERP-Integration-Layer.md) | ERP Entegrasyon Katmanı | ERP sistemleriyle entegrasyon altyapısı | Taslak |
-| [RFC-004](RFC-004-Data-Platform-Architecture.md) | Veri Platformu Mimarisi | Veri depolama, işleme ve analiz altyapısı | Taslak |
-| [RFC-005](RFC-005-Analytics-Layer.md) | Analitik Katmanı ve İş Zekası Entegrasyonu | Veri analizi ve görselleştirme özellikleri | Taslak |
-| [RFC-006](RFC-006-Multi-Site-Support.md) | Çoklu Saha Desteği ve Federasyon | Birden fazla üretim tesisinin merkezi yönetimi | Taslak |
+| RFC No | Title | Description | Status |
+|--------|-------|-------------|--------|
+| [RFC-001](RFC-001-Unified-Namespace-Architecture.md) | Unified Namespace (UNS) Architecture | Design of central data space and messaging infrastructure | Draft |
+| [RFC-002](RFC-002-Edge-Connector-Architecture.md) | Edge Connector Architecture and Protocol Transformation | Data collection architecture from industrial systems | Draft |
+| [RFC-003](RFC-003-ERP-Integration-Layer.md) | ERP Integration Layer | Integration infrastructure with ERP systems | Draft |
+| [RFC-004](RFC-004-Data-Platform-Architecture.md) | Data Platform Architecture | Data storage, processing and analytics infrastructure | Draft |
+| [RFC-005](RFC-005-Analytics-Layer.md) | Analytics Layer and Business Intelligence Integration | Data analysis and visualization features | Draft |
+| [RFC-006](RFC-006-Multi-Site-Support.md) | Multi-Site Support and Federation | Central management of multiple production facilities | Draft |
 
-## Yakında Gelecek RFC'ler
+## Upcoming RFCs
 
-Aşağıdaki RFC'ler, devam eden uygulama planında sıradaki belgelerdir:
+The following RFCs are next in the ongoing implementation plan:
 
-1. **RFC-007**: Kubernetes Operator ve Helm Chart Desteği
-2. **RFC-008**: Plug-and-Play Konnektör Sistemi
-3. **RFC-009**: Yapay Zeka Destekli Anomali Tespiti
-4. **RFC-010**: Marketplace Entegrasyonu
+1. **RFC-007**: Kubernetes Operator and Helm Chart Support
+2. **RFC-008**: Plug-and-Play Connector System
+3. **RFC-009**: AI-Powered Anomaly Detection
+4. **RFC-010**: Marketplace Integration
 
-## RFC Süreci
+## RFC Process
 
-ManufactBridge projesi için RFC süreci aşağıdaki adımları izler:
+The RFC process for the ManufactBridge project follows these steps:
 
-1. **Taslak**: İlk RFC taslağı oluşturulur
-2. **İnceleme**: Topluluk üyeleri tarafından inceleme ve geri bildirim
-3. **Revizyon**: Geri bildirimlere göre düzenleme
-4. **Kabul**: RFC'nin onaylanması ve uygulamaya hazır hale gelmesi
-5. **Uygulama**: RFC'nin koda dönüştürülmesi
-6. **Tamamlandı**: Uygulama tamamlandı ve test edildi
+1. **Draft**: Initial RFC draft is created
+2. **Review**: Review and feedback by community members
+3. **Revision**: Editing based on feedback
+4. **Acceptance**: RFC approval and readiness for implementation
+5. **Implementation**: Converting RFC to code
+6. **Completed**: Implementation completed and tested
 
-## Katkıda Bulunma
+## Contributing
 
-Yeni bir RFC önermek veya mevcut bir RFC'ye katkıda bulunmak istiyorsanız, lütfen GitHub üzerinden Pull Request açın veya Issues bölümünde bir konu başlatın.
+If you would like to propose a new RFC or contribute to an existing RFC, please open a Pull Request on GitHub or start a topic in the Issues section.
 
-## İletişim
+## Contact
 
-ManufactBridge projesine ilişkin sorularınız veya önerileriniz için:
+For questions or suggestions regarding the ManufactBridge project:
 
 - GitHub Issues: [https://github.com/ManufactBridge/ManufactBridge/issues](https://github.com/ManufactBridge/ManufactBridge/issues)
-- Topluluk Forumu: [https://community.manufactbridge.org](https://community.manufactbridge.org)
-- E-posta: [support@manufactbridge.org](mailto:support@manufactbridge.org) 
+- Community Forum: [https://community.manufactbridge.org](https://community.manufactbridge.org)
+- Email: [support@manufactbridge.org](mailto:support@manufactbridge.org) 

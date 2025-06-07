@@ -1,87 +1,87 @@
-# ManufactBridge MVP Geliştirme Planı
+# ManufactBridge MVP Development Plan
 
-## 🎯 MVP Hedefi
-Endüstriyel üretim verilerini toplayan, işleyen ve temel ERP entegrasyonu sağlayan minimum çalışabilir ürün.
+## 🎯 MVP Goal
+A minimum viable product that collects industrial production data, processes it, and provides basic ERP integration.
 
-## 📋 MVP Kapsamı
+## 📋 MVP Scope
 
-### ✅ Dahil Edilecek Özellikler
-1. **Temel UNS (Unified Namespace)** - MQTT/Kafka broker
-2. **Güvenlik Katmanı** - Kimlik doğrulama ve yetkilendirme
-3. **Edge Connector** - Modbus ve OPC UA desteği
-4. **Temel ERP Entegrasyonu** - SAP connector
-5. **Time Series Veri Depolama** - InfluxDB entegrasyonu
-6. **Temel Dashboard** - Grafana entegrasyonu
-7. **Test Altyapısı** - %70+ kod kapsaması
+### ✅ Features to Include
+1. **Basic UNS (Unified Namespace)** - MQTT/Kafka broker
+2. **Security Layer** - Authentication and authorization
+3. **Edge Connector** - Modbus and OPC UA support
+4. **Basic ERP Integration** - SAP connector
+5. **Time Series Data Storage** - InfluxDB integration
+6. **Basic Dashboard** - Grafana integration
+7. **Test Infrastructure** - 70%+ code coverage
 
-### ❌ MVP'ye Dahil Edilmeyecek Özellikler
-- Gelişmiş Analytics (ML/AI)
-- Çoklu Saha Desteği
-- Kestirimci Bakım Modülleri
-- Kapsamlı Dokümantasyon
-- Performans Optimizasyonları
+### ❌ Features Not Included in MVP
+- Advanced Analytics (ML/AI)
+- Multi-Site Support
+- Predictive Maintenance Modules
+- Comprehensive Documentation
+- Performance Optimizations
 
-## 🚀 Geliştirme Fazları (12 Hafta)
+## 🚀 Development Phases (12 Weeks)
 
-### Faz 1: Temel Altyapı (Hafta 1-4)
-**Hedef:** Güvenli ve test edilebilir temel platform
+### Phase 1: Basic Infrastructure (Week 1-4)
+**Goal:** Secure and testable base platform
 
-#### Hafta 1-2: Güvenlik ve Test Altyapısı
-- [ ] Güvenlik Katmanı Tamamlanması (1.7)
-- [ ] Test Framework Kurulumu
-- [ ] CI/CD Pipeline Kurulumu
-- [ ] Birim Test Şablonları
+#### Week 1-2: Security and Test Infrastructure
+- [ ] Security Layer Completion (1.7)
+- [ ] Test Framework Setup
+- [ ] CI/CD Pipeline Setup
+- [ ] Unit Test Templates
 
-#### Hafta 3-4: UNS Testleri ve Optimizasyon
-- [ ] UNS Birim Testleri (1.9)
-- [ ] UNS Entegrasyon Testleri (1.10)
-- [ ] UNS Performans İyileştirmeleri (1.8)
+#### Week 3-4: UNS Testing and Optimization
+- [ ] UNS Unit Tests (1.9)
+- [ ] UNS Integration Tests (1.10)
+- [ ] UNS Performance Improvements (1.8)
 
-### Faz 2: Edge Connectivity (Hafta 5-7)
-**Hedef:** Endüstriyel sistemlerle bağlantı kurma
+### Phase 2: Edge Connectivity (Week 5-7)
+**Goal:** Establishing connections with industrial systems
 
-#### Hafta 5-6: OPC UA Entegrasyonu
-- [ ] OPC UA Adaptörü Geliştirme (2.6)
-- [ ] Protokol Dönüşüm Mekanizması Tamamlanması (2.11)
+#### Week 5-6: OPC UA Integration
+- [ ] OPC UA Adapter Development (2.6)
+- [ ] Protocol Transformation Mechanism Completion (2.11)
 
-#### Hafta 7: Edge Connector Testleri
-- [ ] Edge Connector Birim Testleri (2.12)
-- [ ] Edge Connector Entegrasyon Testleri (2.13)
+#### Week 7: Edge Connector Tests
+- [ ] Edge Connector Unit Tests (2.12)
+- [ ] Edge Connector Integration Tests (2.13)
 
-### Faz 3: Veri Platformu (Hafta 8-9)
-**Hedef:** Veri depolama ve işleme altyapısı
+### Phase 3: Data Platform (Week 8-9)
+**Goal:** Data storage and processing infrastructure
 
-#### Hafta 8: Time Series DB
-- [ ] InfluxDB Entegrasyonu (4.3)
-- [ ] Veri Platformu Temel Yapı Tamamlanması (4.1)
+#### Week 8: Time Series DB
+- [ ] InfluxDB Integration (4.3)
+- [ ] Data Platform Basic Structure Completion (4.1)
 
-#### Hafta 9: Stream Processing
-- [ ] Temel Stream Processing (4.4)
-- [ ] Veri Platformu Testleri (4.7, 4.8)
+#### Week 9: Stream Processing
+- [ ] Basic Stream Processing (4.4)
+- [ ] Data Platform Tests (4.7, 4.8)
 
-### Faz 4: ERP Entegrasyonu (Hafta 10-11)
-**Hedef:** SAP ile temel entegrasyon
+### Phase 4: ERP Integration (Week 10-11)
+**Goal:** Basic integration with SAP
 
-#### Hafta 10: ERP Temel Yapı
-- [ ] ERP Entegrasyon Temel Yapı Tamamlanması (3.1)
-- [ ] Veri Format Dönüştürücü (3.2)
-- [ ] Şema Eşleyici (3.3)
+#### Week 10: ERP Basic Structure
+- [ ] ERP Integration Basic Structure Completion (3.1)
+- [ ] Data Format Transformer (3.2)
+- [ ] Schema Mapper (3.3)
 
-#### Hafta 11: SAP Connector
-- [ ] SAP Connector Geliştirme (3.7)
-- [ ] Kimlik Doğrulama Yöneticisi (3.4)
+#### Week 11: SAP Connector
+- [ ] SAP Connector Development (3.7)
+- [ ] Authentication Manager (3.4)
 
-### Faz 5: Dashboard ve Finalizasyon (Hafta 12)
-**Hedef:** Kullanıcı arayüzü ve son testler
+### Phase 5: Dashboard and Finalization (Week 12)
+**Goal:** User interface and final tests
 
-#### Hafta 12: Dashboard ve Test
-- [ ] Grafana Dashboard Entegrasyonu
-- [ ] End-to-End Testler
-- [ ] MVP Demo Hazırlığı
+#### Week 12: Dashboard and Testing
+- [ ] Grafana Dashboard Integration
+- [ ] End-to-End Tests
+- [ ] MVP Demo Preparation
 
-## 🛠️ Teknik Gereksinimler
+## 🛠️ Technical Requirements
 
-### Teknoloji Stack'i
+### Technology Stack
 ```yaml
 Backend:
   - Node.js (UNS, Edge Connectors)
@@ -110,86 +110,86 @@ Monitoring:
 
 ### Deployment
 ```bash
-# Docker Compose ile hızlı kurulum
+# Quick setup with Docker Compose
 docker-compose -f docker-compose.mvp.yml up -d
 
-# Kubernetes ile production kurulum
+# Production setup with Kubernetes
 kubectl apply -f k8s/mvp/
 ```
 
-## 📊 Başarı Metrikleri
+## 📊 Success Metrics
 
-### Teknik Metrikler
-- [ ] Test Kapsaması: %70+
-- [ ] API Yanıt Süresi: <200ms
-- [ ] Mesaj İşleme: 1000+ msg/sec
-- [ ] Uptime: %99+
+### Technical Metrics
+- [ ] Test Coverage: 70%+
+- [ ] API Response Time: <200ms
+- [ ] Message Processing: 1000+ msg/sec
+- [ ] Uptime: 99%+
 
-### Fonksiyonel Metrikler
-- [ ] OPC UA bağlantısı kurulabilir
-- [ ] MQTT mesajları işlenebilir
-- [ ] SAP'den veri çekilebilir
-- [ ] Time series veriler saklanabilir
-- [ ] Dashboard'da veriler görüntülenebilir
+### Functional Metrics
+- [ ] OPC UA connection can be established
+- [ ] MQTT messages can be processed
+- [ ] Data can be retrieved from SAP
+- [ ] Time series data can be stored
+- [ ] Data can be displayed on dashboard
 
-## 🎯 MVP Demo Senaryosu
+## 🎯 MVP Demo Scenario
 
-### Demo Akışı (15 dakika)
-1. **Sistem Kurulumu** (2 dk)
-   - Docker compose ile tüm servisleri başlatma
-   - Health check'lerin geçmesi
+### Demo Flow (15 minutes)
+1. **System Setup** (2 min)
+   - Start all services with Docker compose
+   - Pass health checks
 
-2. **Veri Toplama** (5 dk)
-   - OPC UA simulator'dan veri okuma
-   - MQTT topic'lerine veri yayınlama
-   - InfluxDB'de veri depolanması
+2. **Data Collection** (5 min)
+   - Read data from OPC UA simulator
+   - Publish data to MQTT topics
+   - Store data in InfluxDB
 
-3. **ERP Entegrasyonu** (5 dk)
-   - SAP test sisteminden üretim emri çekme
-   - Veri dönüşümü ve UNS'ye yayınlama
+3. **ERP Integration** (5 min)
+   - Retrieve production orders from SAP test system
+   - Data transformation and publish to UNS
 
-4. **Görselleştirme** (3 dk)
-   - Grafana dashboard'da real-time veriler
-   - Üretim metrikleri ve KPI'lar
+4. **Visualization** (3 min)
+   - Real-time data on Grafana dashboard
+   - Production metrics and KPIs
 
-## 🚦 Kalite Kapıları (Quality Gates)
+## 🚦 Quality Gates
 
-### Faz 1 Çıkış Kriterleri
-- [ ] Tüm güvenlik testleri geçer
-- [ ] UNS birim testleri %80+ kapsaması
-- [ ] CI/CD pipeline çalışır
+### Phase 1 Exit Criteria
+- [ ] All security tests pass
+- [ ] UNS unit tests 80%+ coverage
+- [ ] CI/CD pipeline works
 
-### Faz 2 Çıkış Kriterleri
-- [ ] OPC UA bağlantısı başarılı
-- [ ] Edge connector testleri geçer
-- [ ] Protokol dönüşümü çalışır
+### Phase 2 Exit Criteria
+- [ ] OPC UA connection successful
+- [ ] Edge connector tests pass
+- [ ] Protocol transformation works
 
-### Faz 3 Çıkış Kriterleri
-- [ ] Time series veri yazma/okuma
-- [ ] Stream processing pipeline çalışır
-- [ ] Veri platformu testleri geçer
+### Phase 3 Exit Criteria
+- [ ] Time series data write/read
+- [ ] Stream processing pipeline works
+- [ ] Data platform tests pass
 
-### Faz 4 Çıkış Kriterleri
-- [ ] SAP bağlantısı kurulur
-- [ ] Veri dönüşümü çalışır
-- [ ] ERP entegrasyon testleri geçer
+### Phase 4 Exit Criteria
+- [ ] SAP connection established
+- [ ] Data transformation works
+- [ ] ERP integration tests pass
 
-### Faz 5 Çıkış Kriterleri
-- [ ] Dashboard çalışır
-- [ ] End-to-end senaryo başarılı
-- [ ] MVP demo hazır
+### Phase 5 Exit Criteria
+- [ ] Dashboard works
+- [ ] End-to-end scenario successful
+- [ ] MVP demo ready
 
-## 📝 Sonraki Adımlar
+## 📝 Next Steps
 
-MVP tamamlandıktan sonra:
-1. **Kullanıcı Geri Bildirimleri** - Beta test kullanıcılarından feedback
-2. **Performans Optimizasyonu** - Bottleneck'lerin giderilmesi
-3. **Dokümantasyon** - Kullanım kılavuzları ve API dokümanları
-4. **Gelişmiş Özellikler** - Analytics, ML, çoklu saha desteği
+After MVP completion:
+1. **User Feedback** - Feedback from beta test users
+2. **Performance Optimization** - Eliminating bottlenecks
+3. **Documentation** - User guides and API documentation
+4. **Advanced Features** - Analytics, ML, multi-site support
 
 ---
 
-**Başlangıç Tarihi:** Bugün
-**Hedef Tamamlanma:** 12 hafta sonra
-**Sorumlu:** @emrecakmak
-**Review Sıklığı:** Haftalık sprint review'lar 
+**Start Date:** Today
+**Target Completion:** 12 weeks from now
+**Responsible:** @emrecakmak
+**Review Frequency:** Weekly sprint reviews 

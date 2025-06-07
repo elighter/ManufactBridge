@@ -1,67 +1,67 @@
-# ManufactBridge Dokümantasyon
+# ManufactBridge Documentation
 
-Bu klasör, ManufactBridge'in teknik ve kullanıcı dokümantasyonunu içerir.
+This folder contains the technical and user documentation for ManufactBridge.
 
-## İçindekiler
+## Contents
 
-- [Dokümantasyon Yapısı](#dokümantasyon-yapısı)
-- [Mimari Dökümanlar](#mimari-dökümanlar)
-- [Kullanıcı Kılavuzları](#kullanıcı-kılavuzları)
-- [API Referansı](#api-referansı)
-- [Entegrasyon Rehberleri](#entegrasyon-rehberleri)
-- [Geliştirici Dökümanları](#geliştirici-dökümanları)
+- [Documentation Structure](#documentation-structure)
+- [Architecture Documents](#architecture-documents)
+- [User Guides](#user-guides)
+- [API Reference](#api-reference)
+- [Integration Guides](#integration-guides)
+- [Developer Documents](#developer-documents)
 
-## Dokümantasyon Yapısı
+## Documentation Structure
 
-ManufactBridge dokümantasyonu birkaç ana bölüme ayrılmıştır:
+ManufactBridge documentation is divided into several main sections:
 
-1. **Ana Proje Bilgileri**: Genel proje açıklaması, kurulum ve temel bilgiler için [ana README.md](/README.md) dosyasına bakabilirsiniz.
+1. **Main Project Information**: For general project description, installation, and basic information, see the [main README.md](/README.md) file.
 
-2. **Teknik Dokümantasyon**: Şu andaki dokümantasyon klasörü (docs/) teknik detayları, kullanım kılavuzlarını, API referanslarını ve entegrasyon rehberlerini içerir.
+2. **Technical Documentation**: The current documentation folder (docs/) contains technical details, usage guides, API references, and integration guides.
 
-3. **Kaynak Kod Yapısı**: Projenin kod organizasyonu ve modül açıklamaları için [src/README.md](/src/README.md) dosyasını inceleyebilirsiniz.
+3. **Source Code Structure**: For project code organization and module descriptions, please review the [src/README.md](/src/README.md) file.
 
-4. **Katkı Sağlama Bilgileri**: Projeye nasıl katkıda bulunacağınız hakkında bilgi için [CONTRIBUTING.md](/CONTRIBUTING.md) dosyasına başvurabilirsiniz.
+4. **Contributing Information**: For information on how to contribute to the project, please refer to the [CONTRIBUTING.md](/CONTRIBUTING.md) file.
 
-## Mimari Dökümanlar
+## Architecture Documents
 
-ManufactBridge'in mimari yapısı ve veri akışı:
+ManufactBridge architecture and data flow:
 
-- [Sistem Mimarisi](architecture/system-architecture.md)
-- [Veri Akışı](architecture/data-flow.md)
-- [Bileşen Diyagramları](architecture/component-diagrams.md)
+- [System Architecture](architecture/system-architecture.md)
+- [Data Flow](architecture/data-flow.md)
+- [Component Diagrams](architecture/component-diagrams.md)
 
-## Kullanıcı Kılavuzları
+## User Guides
 
-ManufactBridge'i kurma ve yapılandırma:
+Installing and configuring ManufactBridge:
 
-- [Hızlı Başlangıç](user-guides/quick-start.md)
-- [Kurulum Rehberi](user-guides/installation.md)
-- [Yapılandırma Seçenekleri](user-guides/configuration.md)
-- [Örnek Senaryolar](user-guides/scenarios.md)
+- [Quick Start](user-guides/quick-start.md)
+- [Installation Guide](user-guides/installation.md)
+- [Configuration Options](user-guides/configuration.md)
+- [Example Scenarios](user-guides/scenarios.md)
 
-## API Referansı
+## API Reference
 
-ManufactBridge API'leri:
+ManufactBridge APIs:
 
 - [RESTful API](api/rest-api.md)
 - [GraphQL API](api/graphql-api.md)
 - [Webhooks](api/webhooks.md)
 
-## Entegrasyon Rehberleri
+## Integration Guides
 
-Entegrasyon rehberleri:
+Integration guides:
 
-- [ERP Entegrasyonu](integration/erp-integration.md)
-- [SCADA Entegrasyonu](integration/scada-integration.md)
-- [Historian Entegrasyonu](integration/historian-integration.md)
-- [IoT Entegrasyonu](integration/iot-integration.md)
+- [ERP Integration](integration/erp-integration.md)
+- [SCADA Integration](integration/scada-integration.md)
+- [Historian Integration](integration/historian-integration.md)
+- [IoT Integration](integration/iot-integration.md)
 
-## Geliştirici Dökümanları
+## Developer Documents
 
-Geliştirici rehberleri:
+Developer guides:
 
-- [Katkı Sağlama Rehberi](developer/contributing.md)
-- [Kod Standartları](developer/code-standards.md)
-- [Test Rehberi](developer/testing.md)
-- [Hata Giderme](developer/troubleshooting.md) 
+- [Contributing Guide](developer/contributing.md)
+- [Code Standards](developer/code-standards.md)
+- [Testing Guide](developer/testing.md)
+- [Troubleshooting](developer/troubleshooting.md) 

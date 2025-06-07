@@ -1,41 +1,41 @@
-# RFC-001: Unified Namespace (UNS) Mimarisi
+# RFC-001: Unified Namespace (UNS) Architecture
 
-## Özet
+## Summary
 
-Bu RFC, ManufactBridge platformunun temel bileşeni olan Unified Namespace (UNS) mimarisini tanımlar. UNS, farklı üretim sistemlerinden ve ERP sistemlerinden gelen verilerin merkezi bir veri alanında bütünleştirilmesini sağlayan, olay odaklı, yayın/abone (pub/sub) tabanlı bir veri mimarisidir.
+This RFC defines the Unified Namespace (UNS) architecture, which is a core component of the ManufactBridge platform. UNS is an event-driven, publish/subscribe (pub/sub) based data architecture that enables the integration of data from different production systems and ERP systems in a central data space.
 
-## Motivasyon
+## Motivation
 
-Endüstriyel ortamlarda, farklı sistemler arasında veri alışverişi genellikle noktadan noktaya entegrasyonlarla gerçekleştirilir. Bu yaklaşım, sistem sayısı arttıkça karmaşıklaşır, bakımı zorlaşır ve ölçeklenebilirlik sorunları yaratır. UNS mimarisi, tüm verileri merkezi bir modelde birleştirerek bu sorunları çözmeyi amaçlar.
+In industrial environments, data exchange between different systems is typically performed through point-to-point integrations. This approach becomes complex as the number of systems increases, makes maintenance difficult, and creates scalability problems. The UNS architecture aims to solve these problems by combining all data in a central model.
 
-## Tasarım Detayları
+## Design Details
 
-### 1. Mimari Bileşenler
+### 1. Architectural Components
 
-UNS mimarisi aşağıdaki temel bileşenleri içerir:
+The UNS architecture includes the following core components:
 
-1. **Mesaj Aracısı (Message Broker)**: MQTT ve/veya Kafka tabanlı, yüksek performanslı, düşük gecikmeli bir mesajlaşma sistemi
-2. **Topic Hiyerarşisi**: ISA-95 standardına dayalı hiyerarşik bir konu (topic) yapısı
-3. **Veri Şema Yönetimi**: Sparkplug B spesifikasyonuyla zenginleştirilmiş, standart veri modelleri
-4. **Mesaj Yönlendirme**: Farklı sistemler arasında veri akışını yönlendiren kurallar ve filtreler
-5. **Veri Dönüştürücüler**: Farklı formatlardaki verileri UNS formatına dönüştüren adaptörler
+1. **Message Broker**: A high-performance, low-latency messaging system based on MQTT and/or Kafka
+2. **Topic Hierarchy**: A hierarchical topic structure based on the ISA-95 standard
+3. **Data Schema Management**: Standard data models enriched with Sparkplug B specification
+4. **Message Routing**: Rules and filters that route data flow between different systems
+5. **Data Transformers**: Adapters that convert data from different formats to UNS format
 
-### 2. Topic Hiyerarşisi
+### 2. Topic Hierarchy
 
-ISA-95 standartlarına dayalı şu hiyerarşik yapıyı kullanacağız:
+We will use the following hierarchical structure based on ISA-95 standards:
 
 ```
 {namespace}/{enterprise}/{site}/{area}/{line}/{workcell}/{equipment}/{messageType}
 ```
 
-Örnek:
+Example:
 ```
 manufactbridge/acme/istanbul/packaging/line1/filler/plc1/data
 ```
 
-### 3. Mesaj Formatı
+### 3. Message Format
 
-Veri mesajları JSON formatında olacak ve şu yapıyı izleyecektir:
+Data messages will be in JSON format and follow this structure:
 
 ```json
 {
@@ -53,43 +53,43 @@ Veri mesajları JSON formatında olacak ve şu yapıyı izleyecektir:
 }
 ```
 
-### 4. Ölçeklenebilirlik ve Yüksek Erişilebilirlik
+### 4. Scalability and High Availability
 
-UNS, yüksek trafik altında bile çalışabilecek şekilde ölçeklenebilir olmalıdır:
+UNS must be scalable to operate even under high traffic:
 
-- MQTT için HiveMQ veya VerneMQ kümeleri
-- Kafka için çoklu broker dağıtımı
-- Geo-replikasyon desteği
-- Automatic failover mekanizmaları
+- HiveMQ or VerneMQ clusters for MQTT
+- Multi-broker deployment for Kafka
+- Geo-replication support
+- Automatic failover mechanisms
 
-### 5. Yetkilendirme ve Güvenlik
+### 5. Authorization and Security
 
-- Topic bazlı erişim kontrolü (ACL)
-- TLS/SSL ile uçtan uca şifreleme
-- OAuth2/OpenID Connect entegrasyonu
+- Topic-based access control (ACL)
+- End-to-end encryption with TLS/SSL
+- OAuth2/OpenID Connect integration
 
-## Uygulama Adımları
+## Implementation Steps
 
-1. Mesaj aracısı olarak HiveMQ veya Kafka'nın Kubernetes üzerinde kurulumu
-2. Topic yönetimi ve şema doğrulama servisleri geliştirilmesi
-3. ISA-95 uyumlu topic yapısının konfigürasyonu
-4. Sparkplug B kütüphanesinin entegrasyonu
-5. Veri dönüştürücülerin geliştirilmesi
-6. Güvenlik kurallarının uygulanması
+1. Installation of HiveMQ or Kafka as message broker on Kubernetes
+2. Development of topic management and schema validation services
+3. Configuration of ISA-95 compliant topic structure
+4. Integration of Sparkplug B library
+5. Development of data transformers
+6. Implementation of security rules
 
-## Alternatifler
+## Alternatives
 
-Unified Namespace yerine aşağıdaki alternatifler değerlendirildi:
+The following alternatives were evaluated instead of Unified Namespace:
 
-1. **Noktadan noktaya entegrasyon**: Karmaşıklık ve ölçeklenebilirlik sorunları nedeniyle reddedildi
-2. **Enterprise Service Bus (ESB)**: Endüstriyel ortamlara yeterince uygun olmaması nedeniyle reddedildi
-3. **Veri havuzu yaklaşımı**: Gerçek zamanlı veri akışını desteklememesi nedeniyle reddedildi
+1. **Point-to-point integration**: Rejected due to complexity and scalability issues
+2. **Enterprise Service Bus (ESB)**: Rejected due to insufficient suitability for industrial environments
+3. **Data lake approach**: Rejected due to lack of support for real-time data flow
 
-## Sonuç
+## Conclusion
 
-UNS mimarisi, ManufactBridge platformunun temeli olarak hizmet edecek ve tüm diğer modüller bu mimariye entegre olacaktır. Bu model, endüstriyel verilerin gerçek zamanlı akışını, standartlaştırılmasını ve analiz edilmesini sağlayacaktır.
+The UNS architecture will serve as the foundation of the ManufactBridge platform and all other modules will be integrated into this architecture. This model will enable real-time flow, standardization, and analysis of industrial data.
 
-## Referanslar
+## References
 
 1. ISA-95 Enterprise-Control System Integration Standards
 2. MQTT Sparkplug Specification v3.0

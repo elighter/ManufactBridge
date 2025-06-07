@@ -1,62 +1,62 @@
-# Unified Namespace Şema Yapısı
+# Unified Namespace Schema Structure
 
-Bu dizin, ManufactBridge Unified Namespace (UNS) platformundaki veri şemalarına ait dosyaları içerir.
+This directory contains files related to data schemas in the ManufactBridge Unified Namespace (UNS) platform.
 
-## Şema Tanımları
+## Schema Definitions
 
-Unified Namespace, yapılandırılmış veri paylaşımı için JSON Schema tabanlı şema doğrulama mekanizması kullanır. Bu sayede:
+Unified Namespace uses a JSON Schema-based schema validation mechanism for structured data sharing. This ensures:
 
-- Veri tutarlılığı sağlanır
-- Veri formatı standartlaştırılır
-- Uygulama geliştirme kolaylaşır
-- Veri kalitesi artar
+- Data consistency
+- Standardized data format
+- Easier application development
+- Improved data quality
 
-## Temel Veri Yapısı
+## Basic Data Structure
 
-UNS'de yayınlanan her mesaj, aşağıdaki genel yapıya uymalıdır:
+Every message published in UNS must conform to the following general structure:
 
 ```json
 {
   "timestamp": "2023-06-15T12:34:56.789Z",
-  "value": <değer-tipi-değişebilir>,
+  "value": <value-type-can-vary>,
   "quality": "GOOD|BAD|UNCERTAIN",
   "metadata": {
-    "source": "kaynak-sistem-id",
+    "source": "source-system-id",
     "dataType": "string|number|boolean|object|array",
-    "unit": "opsiyonel-birim"
+    "unit": "optional-unit"
   }
 }
 ```
 
-## Şema Doğrulama
+## Schema Validation
 
-UNS'de veri doğrulaması iki aşamada gerçekleşir:
+Data validation in UNS occurs in two stages:
 
-1. **Konu Yolu (Topic) Doğrulama**: Verilerin yayınlandığı konu yolları, tanımlı kurallara uygunluk açısından doğrulanır.
+1. **Topic Path Validation**: The topic paths where data is published are validated for compliance with defined rules.
 
-2. **Veri Yapısı Doğrulama**: Yayınlanan veriler, veri tipine göre ilgili JSON şeması ile doğrulanır.
+2. **Data Structure Validation**: Published data is validated against the relevant JSON schema according to data type.
 
-## Mevcut Şemalar
+## Available Schemas
 
-Bu dizinde aşağıdaki şemaları bulabilirsiniz:
+You can find the following schemas in this directory:
 
-- **base-message.json**: Tüm UNS mesajları için temel şema
-- **device-data.json**: Cihaz verileri için şema
-- **alarm-event.json**: Alarm ve olaylar için şema
-- **command.json**: Komut mesajları için şema
-- **metadata.json**: Metadata bilgileri için şema
+- **base-message.json**: Base schema for all UNS messages
+- **device-data.json**: Schema for device data
+- **alarm-event.json**: Schema for alarms and events
+- **command.json**: Schema for command messages
+- **metadata.json**: Schema for metadata information
 
-## Şema Geliştirme
+## Schema Development
 
-Yeni şemalar eklerken veya mevcut şemaları güncellerken aşağıdaki adımları izleyin:
+When adding new schemas or updating existing schemas, follow these steps:
 
-1. JSON Schema formatına uygun şekilde şemayı tanımlayın
-2. Şema doğrulamasını test edin
-3. Şemayı bu dizine ekleyin
-4. `schema-validator.js` dosyasında gerekli referansları güncelleyin
+1. Define the schema in compliance with JSON Schema format
+2. Test schema validation
+3. Add the schema to this directory
+4. Update necessary references in the `schema-validator.js` file
 
-## Kaynaklar
+## Resources
 
-- [JSON Schema Resmi Sitesi](https://json-schema.org/)
-- [JSON Schema Doğrulama](https://json-schema.org/understanding-json-schema/)
-- [AJV JavaScript Doğrulama Kütüphanesi](https://ajv.js.org/) 
+- [JSON Schema Official Website](https://json-schema.org/)
+- [JSON Schema Validation](https://json-schema.org/understanding-json-schema/)
+- [AJV JavaScript Validation Library](https://ajv.js.org/) 

@@ -108,6 +108,7 @@ class DataPlatform extends EventEmitter {
       
       return true;
     } catch (error) {
+      this.connected = false;
       this.logger.error(`Data Platform başlatma hatası: ${error.message}`);
       this.emit('error', error);
       throw error;
@@ -401,7 +402,10 @@ class DataPlatform extends EventEmitter {
    */
   async _initializeInfluxDB() {
     try {
-      this.influxClient = new InfluxDBClient(this.config.influxdb);
+      // Test ortamında mock client kullan
+      if (!this.influxClient) {
+        this.influxClient = new InfluxDBClient(this.config.influxdb);
+      }
       await this.influxClient.connect();
       this.logger.info('InfluxDB bağlantısı kuruldu');
     } catch (error) {

@@ -468,7 +468,7 @@ describe('InfluxDBClient', () => {
 
   describe('Timer İşlemleri', () => {
     test('flush timer başlatma', () => {
-      const setIntervalSpy = jest.spyOn(global, 'setInterval');
+      const setIntervalSpy = jest.spyOn(global, 'setInterval').mockImplementation(() => 'timer-id');
       
       client._startFlushTimer();
       
@@ -481,8 +481,8 @@ describe('InfluxDBClient', () => {
     });
 
     test('flush timer durdurma', () => {
-      const setIntervalSpy = jest.spyOn(global, 'setInterval');
-      const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+      const setIntervalSpy = jest.spyOn(global, 'setInterval').mockImplementation(() => 'timer-id');
+      const clearIntervalSpy = jest.spyOn(global, 'clearInterval').mockImplementation(() => {});
       
       client._startFlushTimer();
       client._stopFlushTimer();
@@ -495,7 +495,7 @@ describe('InfluxDBClient', () => {
     });
 
     test('otomatik flush timer ayarlanır', async () => {
-      const setIntervalSpy = jest.spyOn(global, 'setInterval');
+      const setIntervalSpy = jest.spyOn(global, 'setInterval').mockImplementation(() => 'timer-id');
       
       await client.connect();
       

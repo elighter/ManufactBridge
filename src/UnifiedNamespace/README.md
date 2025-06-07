@@ -1,50 +1,50 @@
 # ManufactBridge Unified Namespace (UNS)
 
-Bu dizin, ManufactBridge platformunun Unified Namespace (UNS) bileşenini içerir. UNS, farklı sistemler ve katmanlar arasında standartlaştırılmış bir veri paylaşım mekanizması sunar.
+This directory contains the Unified Namespace (UNS) component of the ManufactBridge platform. UNS provides a standardized data sharing mechanism between different systems and layers.
 
-## UNS Nedir?
+## What is UNS?
 
-Unified Namespace, endüstriyel veriler için tek bir referans noktası oluşturmak amacıyla tasarlanmış bir veri entegrasyon mimarisidir. Bu mimari, çeşitli sistemler ve protokoller arasında veri akışını standartlaştırır ve kolaylaştırır.
+Unified Namespace is a data integration architecture designed to create a single point of reference for industrial data. This architecture standardizes and facilitates data flow between various systems and protocols.
 
-## Temel Özellikler
+## Key Features
 
-- **Broker Tabanlı Mimari**: MQTT veya Kafka gibi mesaj broker'ları üzerinde çalışır
-- **Konuya Dayalı Veri Modeli**: ISA-95 hiyerarşisi veya Sparkplug B gibi standartlarla veri yolları tanımlanır
-- **Şema Doğrulama**: Paylaşılan verilerin tutarlılığını sağlar
-- **Protokol Bağımsızlığı**: Farklı protokolleri destekler
-- **Güvenlik Katmanı**: Kimlik doğrulama ve yetkilendirme desteği sağlar
+- **Broker-Based Architecture**: Works on message brokers like MQTT or Kafka
+- **Topic-Based Data Model**: Data paths are defined with standards such as ISA-95 hierarchy or Sparkplug B
+- **Schema Validation**: Ensures consistency of shared data
+- **Protocol Independence**: Supports different protocols
+- **Security Layer**: Provides authentication and authorization support
 
-## Mimari Bileşenler
+## Architectural Components
 
-UNS aşağıdaki temel bileşenlerden oluşur:
+UNS consists of the following core components:
 
-- **Broker**: Veri değişimi için mesaj aracısı (MQTT/Kafka)
-- **Schema**: Veri yapısı tanımları ve doğrulama mekanizmaları
-- **ISA95**: Endüstriyel veri hiyerarşisi tanımları
-- **Sparkplug**: Endüstriyel IoT protokolü entegrasyonu
-- **Security**: Güvenlik ve erişim yönetimi
+- **Broker**: Message broker for data exchange (MQTT/Kafka)
+- **Schema**: Data structure definitions and validation mechanisms
+- **ISA95**: Industrial data hierarchy definitions
+- **Sparkplug**: Industrial IoT protocol integration
+- **Security**: Security and access management
 
-## Konu Yapısı
+## Topic Structure
 
-ManufactBridge UNS, aşağıdaki konu yapısını kullanır:
+ManufactBridge UNS uses the following topic structure:
 
 ```
 manufactbridge/enterprise/site/area/line/device/datatype/tag
 ```
 
-Örneğin:
+For example:
 ```
 manufactbridge/acme/istanbul/machine-shop/line1/cnc5/data/temperature
 ```
 
-## Kullanım
+## Usage
 
-UNS'yi kullanmak için:
+To use UNS:
 
 ```javascript
 const { createUNS } = require('./UnifiedNamespace');
 
-// UNS örneğini oluştur
+// Create UNS instance
 const uns = createUNS({
   broker: {
     type: 'mqtt',
@@ -54,7 +54,7 @@ const uns = createUNS({
   }
 });
 
-// Veri yayınla
+// Publish data
 uns.publish('manufactbridge/acme/istanbul/assembly/line2/robot1/data/status', {
   timestamp: new Date().toISOString(),
   value: 'running',
@@ -65,19 +65,19 @@ uns.publish('manufactbridge/acme/istanbul/assembly/line2/robot1/data/status', {
   }
 });
 
-// Verilere abone ol
+// Subscribe to data
 uns.subscribe('manufactbridge/acme/istanbul/assembly/line2/+/data/#', (topic, message) => {
   console.log(`${topic}: ${JSON.stringify(message)}`);
 });
 ```
 
-## Kurulum ve Yapılandırma
+## Installation and Configuration
 
-Ayrıntılı kurulum ve yapılandırma için [docker-compose.yml](./docker-compose.yml) ve [server.js](./server.js) dosyalarına bakabilirsiniz.
+For detailed installation and configuration, see the [docker-compose.yml](./docker-compose.yml) and [server.js](./server.js) files.
 
-## Alt Bileşenler
+## Sub-Components
 
-- [Broker](./broker/README.md): Mesaj broker yönetimi
-- [Schema](./schema/README.md): Veri şemaları ve doğrulama
-- [ISA95](./ISA95/README.md): ISA-95 standardı entegrasyonu
-- [Sparkplug](./Sparkplug/README.md): Sparkplug B protokolü desteği
+- [Broker](./broker/README.md): Message broker management
+- [Schema](./schema/README.md): Data schemas and validation
+- [ISA95](./ISA95/README.md): ISA-95 standard integration
+- [Sparkplug](./Sparkplug/README.md): Sparkplug B protocol support

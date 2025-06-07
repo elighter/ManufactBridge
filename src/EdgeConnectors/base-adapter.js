@@ -1,5 +1,5 @@
 /**
- * ManufactBridge Edge Connector - Temel Protokol Adaptörü
+ * ManufactBridge Edge Connector - Base Protocol Adapter
  * 
  * Bu sınıf, tüm protokol adaptörleri için temel sınıf olarak hizmet verir.
  * Protokol adaptörleri bu sınıfı genişleterek kendi özel işlevlerini eklerken
